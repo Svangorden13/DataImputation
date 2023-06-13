@@ -1,0 +1,804 @@
+\begin{document}
+    
+    \maketitle
+    
+    
+
+    
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{1}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k+kn}{import} \PY{n+nn}{pandas} \PY{k}{as} \PY{n+nn}{pd}
+\PY{k+kn}{from} \PY{n+nn}{collections} \PY{k+kn}{import} \PY{n}{defaultdict}
+\PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+\PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
+
+\PY{k+kn}{import} \PY{n+nn}{gc}
+\PY{k+kn}{import} \PY{n+nn}{warnings}
+\PY{k+kn}{import} \PY{n+nn}{datetime} \PY{k}{as} \PY{n+nn}{dt}
+\PY{k+kn}{import} \PY{n+nn}{math}
+\PY{k+kn}{import} \PY{n+nn}{seaborn} \PY{k}{as} \PY{n+nn}{sn}
+
+\PY{k+kn}{import} \PY{n+nn}{tensorflow} \PY{k}{as} \PY{n+nn}{tf} \PY{c+c1}{\PYZsh{} import tensorflow as a whole}
+\PY{k+kn}{from} \PY{n+nn}{tensorflow} \PY{k+kn}{import} \PY{n}{keras} \PY{c+c1}{\PYZsh{} only import Keras}
+
+\PY{c+c1}{\PYZsh{} import the dense and input layer}
+\PY{k+kn}{from} \PY{n+nn}{keras}\PY{n+nn}{.}\PY{n+nn}{layers} \PY{k+kn}{import} \PY{n}{Dense}\PY{p}{,} \PY{n}{Input}
+\PY{c+c1}{\PYZsh{} the sequential model object}
+\PY{k+kn}{from} \PY{n+nn}{keras}\PY{n+nn}{.}\PY{n+nn}{models} \PY{k+kn}{import} \PY{n}{Sequential}
+
+\PY{k+kn}{from} \PY{n+nn}{numpy} \PY{k+kn}{import} \PY{n}{linalg} \PY{k}{as} \PY{n}{LA}
+\PY{k+kn}{import} \PY{n+nn}{math}
+
+\PY{k+kn}{from} \PY{n+nn}{tensorflow}\PY{n+nn}{.}\PY{n+nn}{keras}\PY{n+nn}{.}\PY{n+nn}{callbacks} \PY{k+kn}{import} \PY{n}{EarlyStopping}
+
+\PY{k+kn}{from} \PY{n+nn}{sklearn}\PY{n+nn}{.}\PY{n+nn}{model\PYZus{}selection} \PY{k+kn}{import} \PY{n}{train\PYZus{}test\PYZus{}split}
+
+\PY{k+kn}{import} \PY{n+nn}{tensorflow\PYZus{}addons} \PY{k}{as} \PY{n+nn}{tfa}
+
+\PY{k+kn}{from} \PY{n+nn}{keras}\PY{n+nn}{.}\PY{n+nn}{models} \PY{k+kn}{import} \PY{n}{Sequential}
+\PY{k+kn}{from} \PY{n+nn}{keras}\PY{n+nn}{.}\PY{n+nn}{layers} \PY{k+kn}{import} \PY{n}{Input}\PY{p}{,} \PY{n}{CuDNNLSTM}\PY{p}{,} \PY{n}{Dense}
+\PY{k+kn}{from} \PY{n+nn}{keras}\PY{n+nn}{.}\PY{n+nn}{layers} \PY{k+kn}{import} \PY{n}{Embedding}
+\PY{k+kn}{from} \PY{n+nn}{tensorflow}\PY{n+nn}{.}\PY{n+nn}{keras}\PY{n+nn}{.}\PY{n+nn}{layers} \PY{k+kn}{import} \PY{n}{LSTM}
+\PY{k+kn}{from} \PY{n+nn}{keras}\PY{n+nn}{.}\PY{n+nn}{callbacks} \PY{k+kn}{import} \PY{n}{EarlyStopping}
+\PY{k+kn}{from} \PY{n+nn}{keras}\PY{n+nn}{.}\PY{n+nn}{callbacks} \PY{k+kn}{import} \PY{n}{ModelCheckpoint}
+
+
+
+\PY{c+c1}{\PYZsh{} load a saved model}
+\PY{k+kn}{from} \PY{n+nn}{keras}\PY{n+nn}{.}\PY{n+nn}{models} \PY{k+kn}{import} \PY{n}{load\PYZus{}model}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{2}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{}Import Data}
+\PY{n}{data} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}csv}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{data.csv}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{samp\PYZus{}sol} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}csv}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{sample\PYZus{}submission.csv}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{3}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{data\PYZus{}set} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}csv}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{data.csv}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{display}\PY{p}{(}\PY{n}{data\PYZus{}set}\PY{o}{.}\PY{n}{head}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+   id    author geometry  pressure [MPa]  mass\_flux [kg/m2-s]  x\_e\_out [-]  \textbackslash{}
+0   0  Thompson     tube            7.00               3770.0       0.1754   
+1   1  Thompson     tube             NaN               6049.0      -0.0416   
+2   2  Thompson      NaN           13.79               2034.0       0.0335   
+3   3      Beus  annulus           13.79               3679.0      -0.0279   
+4   4       NaN     tube           13.79                686.0          NaN   
+
+   D\_e [mm]  D\_h [mm]  length [mm]  chf\_exp [MW/m2]  
+0       NaN      10.8        432.0              3.6  
+1      10.3      10.3        762.0              6.2  
+2       7.7       7.7        457.0              2.5  
+3       5.6      15.2       2134.0              3.0  
+4      11.1      11.1        457.0              2.8  
+    \end{Verbatim}
+
+    
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{4}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{for} \PY{n}{k} \PY{o+ow}{in} \PY{n}{data\PYZus{}set}\PY{o}{.}\PY{n}{columns}\PY{p}{:}
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Column:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{k}\PY{p}{)}
+    \PY{n+nb}{print}\PY{p}{(}\PY{n}{data\PYZus{}set}\PY{p}{[}\PY{n}{k}\PY{p}{]}\PY{o}{.}\PY{n}{value\PYZus{}counts}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+    \PY{n+nb}{print}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Column: id
+0        1
+21106    1
+21104    1
+21103    1
+21102    1
+        ..
+10543    1
+10542    1
+10541    1
+10540    1
+31643    1
+Name: id, Length: 31644, dtype: int64
+
+Column: author
+Thompson        17396
+Janssen          2716
+Weatherhead      2040
+Beus             1604
+Peskov           1084
+Williams          891
+Richenderfer      545
+Mortimore         197
+Kossolapov        101
+Inasaka            46
+Name: author, dtype: int64
+
+Column: geometry
+tube       21145
+annulus     4381
+plate        618
+Name: geometry, dtype: int64
+
+Column: pressure [MPa]
+13.79    9226
+6.89     4701
+15.51    1117
+10.34    1064
+11.03     872
+         {\ldots}
+3.77        1
+12.21       1
+7.06        1
+7.70        1
+12.14       1
+Name: pressure [MPa], Length: 144, dtype: int64
+
+Column: mass\_flux [kg/m2-s]
+4069.0    963
+1519.0    634
+1356.0    615
+2034.0    533
+1000.0    418
+         {\ldots}
+835.0       1
+967.0       1
+6995.0      1
+2050.0      1
+1271.0      1
+Name: mass\_flux [kg/m2-s], Length: 733, dtype: int64
+
+Column: x\_e\_out [-]
+ 0.0334    177
+ 0.0406    151
+ 0.0196    133
+-0.0434    127
+ 0.0886    109
+          {\ldots}
+-0.0524      1
+ 0.0743      1
+-0.4854      1
+ 0.0106      1
+-0.6500      1
+Name: x\_e\_out [-], Length: 1682, dtype: int64
+
+Column: D\_e [mm]
+10.3    2684
+10.8    2512
+1.9     2499
+4.7     2432
+7.7     2294
+5.6     2108
+12.7    1433
+7.8     1283
+10.0    1080
+9.5      881
+11.1     765
+15.0     663
+4.6      658
+23.6     647
+8.5      614
+11.5     602
+3.0      483
+6.4      420
+5.7      400
+12.8     355
+3.6      281
+37.5     262
+5.0      189
+1.0      153
+9.3      147
+22.2      99
+12.4      80
+8.0       32
+19.8      31
+1.1       18
+23.5      11
+1.7        8
+10.1       8
+10.5       6
+10.4       5
+13.3       4
+24.6       2
+22.6       2
+15.2       1
+10.7       1
+23.7       1
+11.3       1
+15.9       1
+Name: D\_e [mm], dtype: int64
+
+Column: D\_h [mm]
+10.3     2792
+10.8     2598
+1.9      2569
+4.7      2554
+7.7      2382
+15.2     1578
+7.8      1313
+10.0     1115
+9.5       904
+42.3      864
+11.1      790
+120.0     672
+23.6      662
+11.5      637
+38.1      611
+4.6       604
+5.6       570
+3.0       492
+15.9      446
+5.7       400
+22.3      386
+12.8      368
+3.6       285
+37.5      279
+24.6      240
+13.3      204
+1.0       165
+9.3       162
+96.3       99
+12.4       92
+11.3       73
+8.0        35
+19.8       31
+1.1        17
+23.5       13
+1.7         9
+10.5        9
+10.4        6
+15.0        6
+10.1        6
+22.2        4
+22.6        4
+12.7        2
+6.4         2
+40.0        1
+33.3        1
+10.6        1
+25.6        1
+14.8        1
+Name: D\_h [mm], dtype: int64
+
+Column: length [mm]
+457.0     3180
+762.0     2364
+318.0     2154
+2134.0    1833
+152.0     1800
+          {\ldots}
+1250.0       1
+524.0        1
+96.0         1
+130.0        1
+2650.0       1
+Name: length [mm], Length: 70, dtype: int64
+
+Column: chf\_exp [MW/m2]
+2.3     1260
+2.5     1144
+2.2     1134
+3.6      986
+2.1      980
+        {\ldots}
+10.4      14
+9.1       14
+10.2      14
+12.1      13
+15.6       7
+Name: chf\_exp [MW/m2], Length: 109, dtype: int64
+
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{5}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n+nb}{max}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{data\PYZus{}set}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{x\PYZus{}e\PYZus{}out [\PYZhy{}]}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{5}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+0.232
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{6}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{more\PYZus{}data} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}csv}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Data\PYZus{}CHF\PYZus{}Zhao\PYZus{}2020\PYZus{}ATE.csv}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{7}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{for} \PY{n}{k} \PY{o+ow}{in} \PY{n}{more\PYZus{}data}\PY{o}{.}\PY{n}{columns}\PY{p}{:}
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Column:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{k}\PY{p}{)}
+    \PY{n+nb}{print}\PY{p}{(}\PY{n}{more\PYZus{}data}\PY{p}{[}\PY{n}{k}\PY{p}{]}\PY{o}{.}\PY{n}{value\PYZus{}counts}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+    \PY{n+nb}{print}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Column: id
+1       1
+1240    1
+1252    1
+1251    1
+1250    1
+       ..
+619     1
+618     1
+617     1
+616     1
+1865    1
+Name: id, Length: 1865, dtype: int64
+
+Column: author
+Thompson        1202
+Janssen          282
+Weatherhead      162
+Beus              77
+Williams          51
+Richenderfer      36
+Mortimore         19
+Peskov            17
+Kossolapov        12
+Inasaka            7
+Name: author, dtype: int64
+
+Column: geometry
+tube       1439
+annulus     378
+plate        48
+Name: geometry, dtype: int64
+
+Column: pressure [MPa]
+13.79    610
+6.89     420
+11.03     59
+10.34     58
+15.51     52
+        {\ldots}
+10.57      1
+10.93      1
+12.34      1
+12.38      1
+10.24      1
+Name: pressure [MPa], Length: 114, dtype: int64
+
+Column: mass\_flux [kg/m2-s]
+4069    76
+1519    55
+2034    42
+2292    28
+1533    27
+        ..
+903      1
+852      1
+783      1
+4164     1
+7093     1
+Name: mass\_flux [kg/m2-s], Length: 578, dtype: int64
+
+Column: x\_e\_out [-]
+ 0.0886    7
+ 0.0145    7
+ 0.0990    6
+-0.0187    6
+-0.0071    5
+          ..
+ 0.0257    1
+ 0.0140    1
+ 0.0363    1
+ 0.1789    1
+-0.1041    1
+Name: x\_e\_out [-], Length: 1360, dtype: int64
+
+Column: D\_e [mm]
+7.7     188
+10.3    179
+1.9     150
+12.7    142
+4.7     137
+5.6     123
+10.8     92
+4.6      91
+8.5      88
+23.6     72
+7.8      70
+11.5     68
+11.1     68
+9.5      51
+15.0     48
+37.5     40
+9.3      31
+12.8     29
+5.7      28
+6.4      25
+3.0      20
+3.6      19
+5.0      19
+10.0     17
+1.0      17
+22.2     15
+12.4     12
+19.8      7
+8.0       6
+23.5      3
+1.1       3
+1.7       3
+23.7      1
+10.4      1
+10.5      1
+22.6      1
+Name: D\_e [mm], dtype: int64
+
+Column: D\_h [mm]
+7.7      188
+10.3     179
+1.9      150
+4.7      137
+10.8      92
+42.3      91
+4.6       78
+15.2      77
+23.6      72
+7.8       70
+11.1      68
+11.5      68
+38.1      51
+9.5       51
+22.3      50
+120.0     48
+5.6       46
+37.5      40
+24.6      38
+9.3       31
+12.8      29
+5.7       28
+15.9      25
+3.0       20
+13.3      19
+3.6       19
+1.0       17
+10.0      17
+96.3      14
+11.3      13
+12.4      12
+19.8       7
+8.0        6
+23.5       3
+1.1        3
+1.7        3
+23.7       1
+22.2       1
+22.6       1
+10.4       1
+10.5       1
+Name: D\_h [mm], dtype: int64
+
+Column: length [mm]
+457     258
+762     154
+1778    126
+152     105
+318     103
+2134     96
+591      70
+914      68
+610      63
+432      61
+1836     51
+2743     50
+10       48
+696      45
+295      41
+1953     40
+864      40
+794      39
+1972     38
+229      37
+305      36
+1930     29
+1524     29
+625      28
+216      25
+737      25
+1727     21
+1829     20
+76       19
+1143     16
+150      10
+2591      8
+100       7
+25        7
+51        5
+1359      5
+38        5
+1650      5
+2007      4
+2711      4
+565       3
+114       3
+35        3
+43        2
+890       2
+660       2
+841       2
+1000      1
+400       1
+520       1
+893       1
+64        1
+3048      1
+1300      1
+Name: length [mm], dtype: int64
+
+Column: chf\_exp [MW/m2]
+2.3     76
+3.2     66
+2.1     64
+2.5     64
+2.2     56
+        ..
+13.0     1
+8.5      1
+7.4      1
+13.3     1
+11.5     1
+Name: chf\_exp [MW/m2], Length: 109, dtype: int64
+
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{8}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{total\PYZus{}data} \PY{o}{=} \PY{n}{data\PYZus{}set}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{more\PYZus{}data}\PY{p}{)}\PY{o}{.}\PY{n}{drop}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{id}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+/var/folders/tr/3zw9td7531z0\_hhwc8105rv00000gn/T/ipykernel\_11003/3739133671.py:1
+: FutureWarning: The frame.append method is deprecated and will be removed from
+pandas in a future version. Use pandas.concat instead.
+  total\_data = data\_set.append(more\_data).drop("id", axis=1)
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{9}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{dummies\PYZus{}author} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{get\PYZus{}dummies}\PY{p}{(}\PY{n}{total\PYZus{}data}\PY{o}{.}\PY{n}{author}\PY{p}{)}
+\PY{n}{merged\PYZus{}with\PYZus{}authors} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{concat}\PY{p}{(}\PY{p}{[}\PY{n}{total\PYZus{}data}\PY{p}{,} \PY{n}{dummies\PYZus{}author}\PY{p}{]}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{columns}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{merged\PYZus{}with\PYZus{}authors} \PY{o}{=} \PY{n}{merged\PYZus{}with\PYZus{}authors}\PY{o}{.}\PY{n}{drop}\PY{p}{(}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{author}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{columns}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+
+\PY{n}{dummies\PYZus{}geometry} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{get\PYZus{}dummies}\PY{p}{(}\PY{n}{merged\PYZus{}with\PYZus{}authors}\PY{o}{.}\PY{n}{geometry}\PY{p}{)}
+\PY{n}{merged\PYZus{}with\PYZus{}authors\PYZus{}and\PYZus{}geometry} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{concat}\PY{p}{(}\PY{p}{[}\PY{n}{merged\PYZus{}with\PYZus{}authors}\PY{p}{,} \PY{n}{dummies\PYZus{}geometry}\PY{p}{]}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{columns}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{finalized\PYZus{}data} \PY{o}{=} \PY{n}{merged\PYZus{}with\PYZus{}authors\PYZus{}and\PYZus{}geometry}\PY{o}{.}\PY{n}{drop}\PY{p}{(}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{geometry}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{columns}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{10}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{final\PYZus{}test} \PY{o}{=} \PY{n}{finalized\PYZus{}data}\PY{p}{[}\PY{n}{pd}\PY{o}{.}\PY{n}{isnull}\PY{p}{(}\PY{n}{finalized\PYZus{}data}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{x\PYZus{}e\PYZus{}out [\PYZhy{}]}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{)}\PY{p}{]}
+\PY{n}{final\PYZus{}test} \PY{o}{=} \PY{n}{final\PYZus{}test}\PY{o}{.}\PY{n}{fillna}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{)}
+\PY{n}{final\PYZus{}test} \PY{o}{=} \PY{n}{final\PYZus{}test}\PY{o}{.}\PY{n}{drop}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{x\PYZus{}e\PYZus{}out [\PYZhy{}]}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}
+\PY{n}{finalized\PYZus{}data} \PY{o}{=} \PY{n}{finalized\PYZus{}data}\PY{o}{.}\PY{n}{dropna}\PY{p}{(}\PY{n}{subset}\PY{o}{=}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{x\PYZus{}e\PYZus{}out [\PYZhy{}]}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{)}
+\PY{n}{finalized\PYZus{}data} \PY{o}{=} \PY{n}{finalized\PYZus{}data}\PY{o}{.}\PY{n}{fillna}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{11}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{submission\PYZus{}indices} \PY{o}{=} \PY{n+nb}{list}\PY{p}{(}\PY{n}{final\PYZus{}test}\PY{o}{.}\PY{n}{index}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{train-test-split}{%
+\subsection{Train / Test Split}\label{train-test-split}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{12}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{X} \PY{o}{=} \PY{n}{finalized\PYZus{}data}\PY{o}{.}\PY{n}{drop}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{x\PYZus{}e\PYZus{}out [\PYZhy{}]}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}
+\PY{n}{y} \PY{o}{=} \PY{n}{finalized\PYZus{}data}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{x\PYZus{}e\PYZus{}out [\PYZhy{}]}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{13}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{X\PYZus{}test}\PY{p}{,} \PY{n}{y\PYZus{}train}\PY{p}{,} \PY{n}{y\PYZus{}test} \PY{o}{=} \PY{n}{train\PYZus{}test\PYZus{}split}\PY{p}{(}\PY{n}{X}\PY{p}{,} \PY{n}{y}\PY{p}{,} \PY{n}{test\PYZus{}size}\PY{o}{=}\PY{l+m+mf}{0.10}\PY{p}{,} \PY{n}{random\PYZus{}state}\PY{o}{=}\PY{l+m+mi}{42}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{14}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{convert\PYZus{}to\PYZus{}sequences}\PY{p}{(}\PY{n}{df}\PY{p}{)}\PY{p}{:}
+    
+    \PY{n}{m}\PY{p}{,}\PY{n}{n} \PY{o}{=} \PY{n}{df}\PY{o}{.}\PY{n}{shape}
+    
+    \PY{n}{sequences} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{m}\PY{p}{,} \PY{l+m+mi}{2}\PY{o}{*}\PY{n}{n}\PY{p}{)}\PY{p}{)}
+    
+    \PY{n}{i} \PY{o}{=} \PY{l+m+mi}{0}
+    \PY{k}{for} \PY{n}{index}\PY{p}{,} \PY{n}{row} \PY{o+ow}{in} \PY{n}{df}\PY{o}{.}\PY{n}{iterrows}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+        
+        \PY{n}{k} \PY{o}{=} \PY{l+m+mi}{1}
+        \PY{n}{j} \PY{o}{=} \PY{l+m+mi}{0}
+        \PY{k}{for} \PY{n}{item} \PY{o+ow}{in} \PY{n}{row}\PY{p}{:} 
+            \PY{k}{if} \PY{n}{item} \PY{o}{!=} \PY{l+m+mi}{0}\PY{p}{:}
+                \PY{n}{sequences}\PY{p}{[}\PY{n}{i}\PY{p}{,} \PY{n}{j}\PY{p}{]} \PY{o}{=} \PY{n}{k}
+                \PY{n}{sequences}\PY{p}{[}\PY{n}{i}\PY{p}{,} \PY{n}{j} \PY{o}{+} \PY{l+m+mi}{1}\PY{p}{]} \PY{o}{=} \PY{n}{item}
+                \PY{n}{j} \PY{o}{+}\PY{o}{=} \PY{l+m+mi}{2}
+            \PY{n}{k} \PY{o}{+}\PY{o}{=} \PY{l+m+mi}{1}
+        
+        \PY{n}{i}\PY{o}{+}\PY{o}{=} \PY{l+m+mi}{1}
+
+    \PY{k}{return} \PY{n}{sequences} 
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{15}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{X\PYZus{}train} \PY{o}{=} \PY{n}{convert\PYZus{}to\PYZus{}sequences}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{)}
+\PY{n}{X\PYZus{}test} \PY{o}{=} \PY{n}{convert\PYZus{}to\PYZus{}sequences}\PY{p}{(}\PY{n}{X\PYZus{}test}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{16}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{X\PYZus{}train} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{expand\PYZus{}dims}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}
+\PY{n}{X\PYZus{}test} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{expand\PYZus{}dims}\PY{p}{(}\PY{n}{X\PYZus{}test}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}
+
+\PY{n}{y\PYZus{}train} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{y\PYZus{}train}\PY{p}{)}
+\PY{n}{y\PYZus{}test} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{y\PYZus{}test}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{17}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{X\PYZus{}train}\PY{o}{.}\PY{n}{shape}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{17}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+(20784, 1, 38)
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \hypertarget{construct-model}{%
+\subsection{Construct Model}\label{construct-model}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{18}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{model} \PY{o}{=} \PY{n}{Sequential}\PY{p}{(}\PY{p}{)}
+\PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{LSTM}\PY{p}{(}\PY{l+m+mi}{64}\PY{p}{,} \PY{n}{input\PYZus{}shape}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{2}\PY{o}{*}\PY{l+m+mi}{19}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+\PY{n}{model}\PY{o}{.}\PY{n}{add}\PY{p}{(}\PY{n}{Dense}\PY{p}{(}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{activation}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{tanh}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+2023-05-29 10:45:38.417990: I tensorflow/core/platform/cpu\_feature\_guard.cc:193]
+This TensorFlow binary is optimized with oneAPI Deep Neural Network Library
+(oneDNN) to use the following CPU instructions in performance-critical
+operations:  SSE4.1 SSE4.2
+To enable them in other operations, rebuild TensorFlow with the appropriate
+compiler flags.
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{19}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{model}\PY{o}{.}\PY{n}{compile}\PY{p}{(}\PY{n}{loss}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{mean\PYZus{}squared\PYZus{}error}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{p}{,} \PY{n}{optimizer}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{adam}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{metrics}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{accuracy}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+\PY{n}{model}\PY{o}{.}\PY{n}{summary}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Model: "sequential"
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+ Layer (type)                Output Shape              Param \#
+=================================================================
+ lstm (LSTM)                 (None, 64)                26368
+
+ dense (Dense)               (None, 1)                 65
+
+=================================================================
+Total params: 26,433
+Trainable params: 26,433
+Non-trainable params: 0
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{20}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{}model = load\PYZus{}model(\PYZsq{}best\PYZus{}model.h5\PYZsq{})}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{37}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{}es = EarlyStopping(monitor=\PYZsq{}val\PYZus{}loss\PYZsq{}, mode=\PYZsq{}min\PYZsq{}, verbose=1, patience=200)}
+\PY{n}{mc} \PY{o}{=} \PY{n}{ModelCheckpoint}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{best\PYZus{}model.h5}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{monitor}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{val\PYZus{}loss}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{mode}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{min}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{verbose}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{save\PYZus{}best\PYZus{}only}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{46}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{model}\PY{o}{.}\PY{n}{fit}\PY{p}{(}\PY{n}{X\PYZus{}train}\PY{p}{,} \PY{n}{y\PYZus{}train}\PY{p}{,} \PY{n}{epochs}\PY{o}{=}\PY{l+m+mi}{8000}\PY{p}{,} \PY{n}{batch\PYZus{}size}\PY{o}{=}\PY{l+m+mi}{20}\PY{p}{,} \PY{n}{verbose}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{,} \PY{n}{validation\PYZus{}split}\PY{o}{=}\PY{l+m+mf}{0.1}\PY{p}{,} \PY{n}{callbacks}\PY{o}{=}\PY{p}{[}\PY{n}{mc}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \hypertarget{perform-prediction}{%
+\section{Perform Prediction}\label{perform-prediction}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{50}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{X\PYZus{}submission} \PY{o}{=} \PY{n}{convert\PYZus{}to\PYZus{}sequences}\PY{p}{(}\PY{n}{final\PYZus{}test}\PY{p}{)}
+\PY{n}{X\PYZus{}submission} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{expand\PYZus{}dims}\PY{p}{(}\PY{n}{X\PYZus{}submission}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{51}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{y\PYZus{}submission} \PY{o}{=} \PY{n}{model}\PY{o}{.}\PY{n}{predict}\PY{p}{(}\PY{n}{X\PYZus{}submission}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+326/326 [==============================] - 0s 403us/step
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{52}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{y\PYZus{}submission} \PY{o}{=} \PY{n+nb}{list}\PY{p}{(}\PY{n}{y\PYZus{}submission}\PY{o}{.}\PY{n}{reshape}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{y\PYZus{}submission}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{53}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{DataFrame}\PY{p}{(}\PY{n}{data}\PY{o}{=}\PY{p}{\PYZob{}}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{id}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{submission\PYZus{}indices}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{x\PYZus{}e\PYZus{}out [\PYZhy{}]}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{n}{y\PYZus{}submission}\PY{p}{\PYZcb{}}\PY{p}{)}
+\PY{n}{df}\PY{o}{.}\PY{n}{to\PYZus{}csv}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{submission.csv}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{sep}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{,}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{index}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+
+\end{Verbatim}
+\end{tcolorbox}
+
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+\end{document}
