@@ -1,0 +1,1416 @@
+\documentclass[11pt]{article}
+
+    \usepackage[breakable]{tcolorbox}
+    \usepackage{parskip} % Stop auto-indenting (to mimic markdown behaviour)
+    
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % Maintain compatibility with old templates. Remove in nbconvert 6.0
+    \let\Oldincludegraphics\includegraphics
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+    \DeclareCaptionFormat{nocaption}{}
+    \captionsetup{format=nocaption,aboveskip=0pt,belowskip=0pt}
+
+    \usepackage{float}
+    \floatplacement{figure}{H} % forces figures to be placed at the correct location
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+
+    \usepackage{iftex}
+    \ifPDFTeX
+        \usepackage[T1]{fontenc}
+        \IfFileExists{alphabeta.sty}{
+              \usepackage{alphabeta}
+          }{
+              \usepackage[mathletters]{ucs}
+              \usepackage[utf8x]{inputenc}
+          }
+    \else
+        \usepackage{fontspec}
+        \usepackage{unicode-math}
+    \fi
+
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics
+                         % to support a larger range
+    \makeatletter % fix for old versions of grffile with XeLaTeX
+    \@ifpackagelater{grffile}{2019/11/01}
+    {
+      % Do nothing on new versions
+    }
+    {
+      \def\Gread@@xetex#1{%
+        \IfFileExists{"\Gin@base".bb}%
+        {\Gread@eps{\Gin@base.bb}}%
+        {\Gread@@xetex@aux#1}%
+      }
+    }
+    \makeatother
+    \usepackage[Export]{adjustbox} % Used to constrain images to a maximum size
+    \adjustboxset{max size={0.9\linewidth}{0.9\paperheight}}
+
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    % The default LaTeX title has an obnoxious amount of whitespace. By default,
+    % titling removes some of it. It also provides customization options.
+    \usepackage{titling}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage{array}     % table support for pandoc >= 2.11.3
+    \usepackage{calc}      % table minipage width calculation for pandoc >= 2.11.1
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    \usepackage{mathrsfs}
+    
+
+    
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+    \definecolor{ansi-default-inverse-fg}{HTML}{FFFFFF}
+    \definecolor{ansi-default-inverse-bg}{HTML}{000000}
+
+    % common color for the border for error outputs.
+    \definecolor{outerrorbackground}{HTML}{FFDFDF}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+
+
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatibility definitions
+    \def\gt{>}
+    \def\lt{<}
+    \let\Oldtex\TeX
+    \let\Oldlatex\LaTeX
+    \renewcommand{\TeX}{\textrm{\Oldtex}}
+    \renewcommand{\LaTeX}{\textrm{\Oldlatex}}
+    % Document parameters
+    % Document title
+    \title{BERT}
+    
+    
+    
+    
+    
+% Pygments definitions
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\@namedef{PY@tok@w}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\@namedef{PY@tok@c}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cp}{\def\PY@tc##1{\textcolor[rgb]{0.61,0.40,0.00}{##1}}}
+\@namedef{PY@tok@k}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kt}{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\@namedef{PY@tok@o}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ow}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@nb}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nf}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@nn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@ne}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.80,0.25,0.22}{##1}}}
+\@namedef{PY@tok@nv}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@no}{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\@namedef{PY@tok@nl}{\def\PY@tc##1{\textcolor[rgb]{0.46,0.46,0.00}{##1}}}
+\@namedef{PY@tok@ni}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@na}{\def\PY@tc##1{\textcolor[rgb]{0.41,0.47,0.13}{##1}}}
+\@namedef{PY@tok@nt}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@nd}{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\@namedef{PY@tok@s}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sd}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@si}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@se}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.36,0.12}{##1}}}
+\@namedef{PY@tok@sr}{\def\PY@tc##1{\textcolor[rgb]{0.64,0.35,0.47}{##1}}}
+\@namedef{PY@tok@ss}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sx}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@m}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@gh}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gu}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\@namedef{PY@tok@gd}{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\@namedef{PY@tok@gi}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.52,0.00}{##1}}}
+\@namedef{PY@tok@gr}{\def\PY@tc##1{\textcolor[rgb]{0.89,0.00,0.00}{##1}}}
+\@namedef{PY@tok@ge}{\let\PY@it=\textit}
+\@namedef{PY@tok@gs}{\let\PY@bf=\textbf}
+\@namedef{PY@tok@gp}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\@namedef{PY@tok@go}{\def\PY@tc##1{\textcolor[rgb]{0.44,0.44,0.44}{##1}}}
+\@namedef{PY@tok@gt}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\@namedef{PY@tok@err}{\def\PY@bc##1{{\setlength{\fboxsep}{\string -\fboxrule}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}}
+\@namedef{PY@tok@kc}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kd}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kn}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@kr}{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@bp}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\@namedef{PY@tok@fm}{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\@namedef{PY@tok@vc}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vg}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vi}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@vm}{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\@namedef{PY@tok@sa}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sb}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sc}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@dl}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s2}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@sh}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@s1}{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\@namedef{PY@tok@mb}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mf}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mh}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mi}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@il}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@mo}{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\@namedef{PY@tok@ch}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cm}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cpf}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@c1}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+\@namedef{PY@tok@cs}{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.24,0.48,0.48}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % For linebreaks inside Verbatim environment from package fancyvrb.
+    \makeatletter
+        \newbox\Wrappedcontinuationbox
+        \newbox\Wrappedvisiblespacebox
+        \newcommand*\Wrappedvisiblespace {\textcolor{red}{\textvisiblespace}}
+        \newcommand*\Wrappedcontinuationsymbol {\textcolor{red}{\llap{\tiny$\m@th\hookrightarrow$}}}
+        \newcommand*\Wrappedcontinuationindent {3ex }
+        \newcommand*\Wrappedafterbreak {\kern\Wrappedcontinuationindent\copy\Wrappedcontinuationbox}
+        % Take advantage of the already applied Pygments mark-up to insert
+        % potential linebreaks for TeX processing.
+        %        {, <, #, %, $, ' and ": go to next line.
+        %        _, }, ^, &, >, - and ~: stay at end of broken line.
+        % Use of \textquotesingle for straight quote.
+        \newcommand*\Wrappedbreaksatspecials {%
+            \def\PYGZus{\discretionary{\char`\_}{\Wrappedafterbreak}{\char`\_}}%
+            \def\PYGZob{\discretionary{}{\Wrappedafterbreak\char`\{}{\char`\{}}%
+            \def\PYGZcb{\discretionary{\char`\}}{\Wrappedafterbreak}{\char`\}}}%
+            \def\PYGZca{\discretionary{\char`\^}{\Wrappedafterbreak}{\char`\^}}%
+            \def\PYGZam{\discretionary{\char`\&}{\Wrappedafterbreak}{\char`\&}}%
+            \def\PYGZlt{\discretionary{}{\Wrappedafterbreak\char`\<}{\char`\<}}%
+            \def\PYGZgt{\discretionary{\char`\>}{\Wrappedafterbreak}{\char`\>}}%
+            \def\PYGZsh{\discretionary{}{\Wrappedafterbreak\char`\#}{\char`\#}}%
+            \def\PYGZpc{\discretionary{}{\Wrappedafterbreak\char`\%}{\char`\%}}%
+            \def\PYGZdl{\discretionary{}{\Wrappedafterbreak\char`\$}{\char`\$}}%
+            \def\PYGZhy{\discretionary{\char`\-}{\Wrappedafterbreak}{\char`\-}}%
+            \def\PYGZsq{\discretionary{}{\Wrappedafterbreak\textquotesingle}{\textquotesingle}}%
+            \def\PYGZdq{\discretionary{}{\Wrappedafterbreak\char`\"}{\char`\"}}%
+            \def\PYGZti{\discretionary{\char`\~}{\Wrappedafterbreak}{\char`\~}}%
+        }
+        % Some characters . , ; ? ! / are not pygmentized.
+        % This macro makes them "active" and they will insert potential linebreaks
+        \newcommand*\Wrappedbreaksatpunct {%
+            \lccode`\~`\.\lowercase{\def~}{\discretionary{\hbox{\char`\.}}{\Wrappedafterbreak}{\hbox{\char`\.}}}%
+            \lccode`\~`\,\lowercase{\def~}{\discretionary{\hbox{\char`\,}}{\Wrappedafterbreak}{\hbox{\char`\,}}}%
+            \lccode`\~`\;\lowercase{\def~}{\discretionary{\hbox{\char`\;}}{\Wrappedafterbreak}{\hbox{\char`\;}}}%
+            \lccode`\~`\:\lowercase{\def~}{\discretionary{\hbox{\char`\:}}{\Wrappedafterbreak}{\hbox{\char`\:}}}%
+            \lccode`\~`\?\lowercase{\def~}{\discretionary{\hbox{\char`\?}}{\Wrappedafterbreak}{\hbox{\char`\?}}}%
+            \lccode`\~`\!\lowercase{\def~}{\discretionary{\hbox{\char`\!}}{\Wrappedafterbreak}{\hbox{\char`\!}}}%
+            \lccode`\~`\/\lowercase{\def~}{\discretionary{\hbox{\char`\/}}{\Wrappedafterbreak}{\hbox{\char`\/}}}%
+            \catcode`\.\active
+            \catcode`\,\active
+            \catcode`\;\active
+            \catcode`\:\active
+            \catcode`\?\active
+            \catcode`\!\active
+            \catcode`\/\active
+            \lccode`\~`\~
+        }
+    \makeatother
+
+    \let\OriginalVerbatim=\Verbatim
+    \makeatletter
+    \renewcommand{\Verbatim}[1][1]{%
+        %\parskip\z@skip
+        \sbox\Wrappedcontinuationbox {\Wrappedcontinuationsymbol}%
+        \sbox\Wrappedvisiblespacebox {\FV@SetupFont\Wrappedvisiblespace}%
+        \def\FancyVerbFormatLine ##1{\hsize\linewidth
+            \vtop{\raggedright\hyphenpenalty\z@\exhyphenpenalty\z@
+                \doublehyphendemerits\z@\finalhyphendemerits\z@
+                \strut ##1\strut}%
+        }%
+        % If the linebreak is at a space, the latter will be displayed as visible
+        % space at end of first line, and a continuation symbol starts next line.
+        % Stretch/shrink are however usually zero for typewriter font.
+        \def\FV@Space {%
+            \nobreak\hskip\z@ plus\fontdimen3\font minus\fontdimen4\font
+            \discretionary{\copy\Wrappedvisiblespacebox}{\Wrappedafterbreak}
+            {\kern\fontdimen2\font}%
+        }%
+
+        % Allow breaks at special characters using \PYG... macros.
+        \Wrappedbreaksatspecials
+        % Breaks at punctuation characters . , ; ? ! and / need catcode=\active
+        \OriginalVerbatim[#1,codes*=\Wrappedbreaksatpunct]%
+    }
+    \makeatother
+
+    % Exact colors from NB
+    \definecolor{incolor}{HTML}{303F9F}
+    \definecolor{outcolor}{HTML}{D84315}
+    \definecolor{cellborder}{HTML}{CFCFCF}
+    \definecolor{cellbackground}{HTML}{F7F7F7}
+
+    % prompt
+    \makeatletter
+    \newcommand{\boxspacing}{\kern\kvtcb@left@rule\kern\kvtcb@boxsep}
+    \makeatother
+    \newcommand{\prompt}[4]{
+        {\ttfamily\llap{{\color{#2}[#3]:\hspace{3pt}#4}}\vspace{-\baselineskip}}
+    }
+    
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+\begin{document}
+    
+    \maketitle
+    
+    
+
+    
+    \hypertarget{import-packages}{%
+\subsubsection{Import Packages}\label{import-packages}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{1}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k+kn}{import} \PY{n+nn}{tensorflow} \PY{k}{as} \PY{n+nn}{tf}
+\PY{k+kn}{import} \PY{n+nn}{tensorflow\PYZus{}hub} \PY{k}{as} \PY{n+nn}{hub}
+\PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+\PY{k+kn}{import} \PY{n+nn}{pandas} \PY{k}{as} \PY{n+nn}{pd}
+\PY{k+kn}{import} \PY{n+nn}{torch}
+\PY{k+kn}{from} \PY{n+nn}{torch}\PY{n+nn}{.}\PY{n+nn}{utils}\PY{n+nn}{.}\PY{n+nn}{data} \PY{k+kn}{import} \PY{n}{TensorDataset}\PY{p}{,} \PY{n}{DataLoader}\PY{p}{,} \PY{n}{random\PYZus{}split}\PY{p}{,} \PY{n}{SequentialSampler}\PY{p}{,} \PY{n}{RandomSampler}
+\PY{k+kn}{from} \PY{n+nn}{torchmetrics} \PY{k+kn}{import} \PY{n}{MeanSquaredError}
+
+\PY{c+c1}{\PYZsh{}}
+\PY{k+kn}{from} \PY{n+nn}{tqdm}\PY{n+nn}{.}\PY{n+nn}{notebook} \PY{k+kn}{import} \PY{n}{tqdm}\PY{p}{,} \PY{n}{trange}
+
+\PY{k+kn}{from} \PY{n+nn}{platform} \PY{k+kn}{import} \PY{n}{python\PYZus{}version}\PY{p}{,} \PY{n}{platform}
+
+\PY{k+kn}{from} \PY{n+nn}{transformers} \PY{k+kn}{import} \PY{p}{(}
+    \PY{n}{BertModel}\PY{p}{,}
+    \PY{n}{BertTokenizer}\PY{p}{,}
+    \PY{n}{TFBertForMaskedLM}\PY{p}{,}
+    \PY{n}{BertForMaskedLM}\PY{p}{,}
+    \PY{n}{AdamW}\PY{p}{,}
+    \PY{n}{get\PYZus{}linear\PYZus{}schedule\PYZus{}with\PYZus{}warmup}\PY{p}{,}
+\PY{p}{)}
+ 
+\PY{k+kn}{from} \PY{n+nn}{sys} \PY{k+kn}{import} \PY{n}{executable}
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{executable}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{platform: }\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s2}{\PYZdq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{platform}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{p}{)} \PY{c+c1}{\PYZsh{}Python Platform: macOS\PYZhy{}13.3.1\PYZhy{}arm64\PYZhy{}arm\PYZhy{}64bit}
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{python }\PY{l+s+s1}{\PYZsq{}} \PY{o}{+} \PY{n}{python\PYZus{}version}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{pd}\PY{o}{.}\PY{n+nv+vm}{\PYZus{}\PYZus{}name\PYZus{}\PYZus{}}\PY{p}{,} \PY{n}{pd}\PY{o}{.}\PY{n}{\PYZus{}\PYZus{}version\PYZus{}\PYZus{}}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n+nv+vm}{\PYZus{}\PYZus{}name\PYZus{}\PYZus{}}\PY{p}{,} \PY{n}{np}\PY{o}{.}\PY{n}{\PYZus{}\PYZus{}version\PYZus{}\PYZus{}}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{torch}\PY{o}{.}\PY{n+nv+vm}{\PYZus{}\PYZus{}name\PYZus{}\PYZus{}}\PY{p}{,} \PY{n}{torch}\PY{o}{.}\PY{n}{\PYZus{}\PYZus{}version\PYZus{}\PYZus{}}\PY{p}{)}
+\PY{n}{has\PYZus{}gpu} \PY{o}{=} \PY{n}{torch}\PY{o}{.}\PY{n}{cuda}\PY{o}{.}\PY{n}{is\PYZus{}available}\PY{p}{(}\PY{p}{)}
+\PY{n}{has\PYZus{}mps} \PY{o}{=} \PY{n+nb}{getattr}\PY{p}{(}\PY{n}{torch}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{has\PYZus{}mps}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{k+kc}{False}\PY{p}{)}
+\PY{n}{device} \PY{o}{=} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{mps}\PY{l+s+s2}{\PYZdq{}} \PY{k}{if} \PY{n}{has\PYZus{}mps} \PYZbs{}
+    \PY{k}{else} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{gpu}\PY{l+s+s2}{\PYZdq{}} \PY{k}{if} \PY{n}{has\PYZus{}gpu} \PY{k}{else} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{cpu}\PY{l+s+s2}{\PYZdq{}}
+
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{GPU is}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{AVAILABLE}\PY{l+s+s2}{\PYZdq{}} \PY{k}{if} \PY{n}{has\PYZus{}gpu} \PY{k}{else} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{NOT available}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{c+c1}{\PYZsh{}GPU is NOT AVAILABLE}
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{MPS is}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{AVAILABLE}\PY{l+s+s2}{\PYZdq{}} \PY{k}{if} \PY{n}{has\PYZus{}mps} \PY{k}{else} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{NOT available}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)} \PY{c+c1}{\PYZsh{}MPS is AVAILABLE}
+ 
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{target device is }\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s2}{\PYZdq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{device}\PY{p}{)}\PY{p}{)} \PY{c+c1}{\PYZsh{}Target device is mps}
+
+\PY{l+s+sd}{\PYZsq{}\PYZsq{}\PYZsq{}}
+\PY{l+s+sd}{Functions, important globals}
+\PY{l+s+sd}{\PYZsq{}\PYZsq{}\PYZsq{}}
+\PY{n}{MAX\PYZus{}LENGTH} \PY{o}{=} \PY{l+m+mi}{128} \PY{c+c1}{\PYZsh{} for sequence length}
+\PY{n}{batch\PYZus{}size} \PY{o}{=} \PY{l+m+mi}{32} \PY{c+c1}{\PYZsh{} for training}
+
+\PY{n}{tokenizer} \PY{o}{=} \PY{n}{BertTokenizer}\PY{o}{.}\PY{n}{from\PYZus{}pretrained}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{bert\PYZhy{}base\PYZhy{}uncased}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+
+\PY{n}{token\PYZus{}encoder\PYZus{}fun} \PY{o}{=} \PY{k}{lambda} \PY{n}{row}\PY{p}{:} \PY{n}{tokenizer}\PY{o}{.}\PY{n}{encode}\PY{p}{(}\PY{n}{row}\PY{p}{,}
+                                                 \PY{n}{add\PYZus{}special\PYZus{}tokens}\PY{o}{=}\PY{k+kc}{True}\PY{p}{,}
+                                                 \PY{n}{padding}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{max\PYZus{}length}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}
+                                                 \PY{c+c1}{\PYZsh{}return\PYZus{}tensors=\PYZsq{}pt\PYZsq{},}
+                                                 \PY{n}{max\PYZus{}length}\PY{o}{=}\PY{n}{MAX\PYZus{}LENGTH}\PY{p}{,}
+                                                 \PY{p}{)}
+
+\PY{k}{class} \PY{n+nc}{BertHeatFlux}\PY{p}{(}\PY{n}{torch}\PY{o}{.}\PY{n}{nn}\PY{o}{.}\PY{n}{Module}\PY{p}{)}\PY{p}{:}
+    \PY{k}{def} \PY{n+nf+fm}{\PYZus{}\PYZus{}init\PYZus{}\PYZus{}}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{)}\PY{p}{:}
+        \PY{n+nb}{super}\PY{p}{(}\PY{n}{BertHeatFlux}\PY{p}{,} \PY{n+nb+bp}{self}\PY{p}{)}\PY{o}{.}\PY{n+nf+fm}{\PYZus{}\PYZus{}init\PYZus{}\PYZus{}}\PY{p}{(}\PY{p}{)}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{bert} \PY{o}{=} \PY{n}{BertModel}\PY{o}{.}\PY{n}{from\PYZus{}pretrained}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{bert\PYZhy{}base\PYZhy{}uncased}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{o}{.}\PY{n}{to}\PY{p}{(}\PY{n}{device}\PY{p}{)}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{dropout} \PY{o}{=} \PY{n}{torch}\PY{o}{.}\PY{n}{nn}\PY{o}{.}\PY{n}{Dropout}\PY{p}{(}\PY{l+m+mf}{0.3}\PY{p}{)}
+        \PY{c+c1}{\PYZsh{} x[1].shape[\PYZhy{}1]}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{linear} \PY{o}{=} \PY{n}{torch}\PY{o}{.}\PY{n}{nn}\PY{o}{.}\PY{n}{Linear}\PY{p}{(}\PY{l+m+mi}{768}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{)}
+    \PY{k}{def} \PY{n+nf}{forward}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,} \PY{n}{input\PYZus{}ids}\PY{p}{,} \PY{n}{attention\PYZus{}masks}\PY{p}{)}\PY{p}{:}
+        \PY{n}{output} \PY{o}{=} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{bert}\PY{p}{(}\PY{n}{input\PYZus{}ids}\PY{p}{,} \PY{n}{attention\PYZus{}masks}\PY{p}{)}
+        \PY{n}{pooled\PYZus{}output} \PY{o}{=} \PY{n}{output}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}
+        \PY{n}{dropout} \PY{o}{=} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{dropout}\PY{p}{(}\PY{n}{pooled\PYZus{}output}\PY{p}{)}
+        \PY{n}{out} \PY{o}{=} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{linear}\PY{p}{(}\PY{n}{dropout}\PY{p}{)}
+        \PY{k}{return} \PY{n}{out}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+/Users/ask/anaconda3/envs/STA208\_BERT/bin/python
+platform: macOS-13.4-arm64-arm-64bit
+python 3.9.16
+pandas 1.5.3
+numpy 1.24.3
+torch 2.0.1
+GPU is NOT available
+MPS is AVAILABLE
+target device is mps
+    \end{Verbatim}
+
+    \hypertarget{data-processing}{%
+\subsubsection{Data Processing}\label{data-processing}}
+
+    \hypertarget{trainingtesting-data}{%
+\paragraph{Training/Testing Data}\label{trainingtesting-data}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{2}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Load the numerical data you want to train BERT on}
+\PY{n}{df1} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}csv}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{data.csv}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{df2} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}csv}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Data\PYZus{}CHF\PYZus{}Zhao\PYZus{}2020\PYZus{}ATE.csv}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{frames} \PY{o}{=} \PY{p}{[}\PY{n}{df1}\PY{p}{,} \PY{n}{df2}\PY{p}{]}
+\PY{n}{df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{concat}\PY{p}{(}\PY{n}{frames}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Define the name of the column that you want to move to the end of the DataFrame}
+\PY{n}{column\PYZus{}name} \PY{o}{=} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{x\PYZus{}e\PYZus{}out [\PYZhy{}]}\PY{l+s+s2}{\PYZdq{}}
+
+\PY{c+c1}{\PYZsh{} Select the column and drop it from the DataFrame}
+\PY{n}{column\PYZus{}to\PYZus{}move} \PY{o}{=} \PY{n}{df}\PY{p}{[}\PY{n}{column\PYZus{}name}\PY{p}{]}
+\PY{n}{col} \PY{o}{=} \PY{n}{df}\PY{o}{.}\PY{n}{drop}\PY{p}{(}\PY{n}{column\PYZus{}name}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{inplace}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Append the column back to the end of the DataFrame}
+\PY{n}{df}\PY{p}{[}\PY{n}{column\PYZus{}name}\PY{p}{]} \PY{o}{=} \PY{n}{column\PYZus{}to\PYZus{}move}
+
+\PY{c+c1}{\PYZsh{} select only rows where x\PYZus{}e out exists}
+\PY{c+c1}{\PYZsh{}data = df[df[\PYZdq{}x\PYZus{}e\PYZus{}out [\PYZhy{}]\PYZdq{}].isna()]}
+\PY{n}{data} \PY{o}{=} \PY{n}{df}\PY{p}{[}\PY{o}{\PYZti{}}\PY{n}{df}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{x\PYZus{}e\PYZus{}out [\PYZhy{}]}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{o}{.}\PY{n}{isna}\PY{p}{(}\PY{p}{)}\PY{p}{]}
+
+\PY{c+c1}{\PYZsh{} start with a small data set for speed}
+\PY{c+c1}{\PYZsh{}data = data[0:1000]}
+\PY{n}{data} \PY{o}{=} \PY{n}{data}\PY{o}{.}\PY{n}{reset\PYZus{}index}\PY{p}{(}\PY{n}{drop}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Convert numerical values to string format to match BERT input requirement}
+\PY{n}{data} \PY{o}{=} \PY{n}{data}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{n+nb}{str}\PY{p}{)}
+
+\PY{n}{data}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{sequence}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]} \PY{o}{=} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZdq{}}
+
+\PY{c+c1}{\PYZsh{} Concatenate all the values in a row into a single string using the column names}
+\PY{c+c1}{\PYZsh{} Iterate through rows and columns}
+\PY{k}{for} \PY{n}{index}\PY{p}{,} \PY{n}{row} \PY{o+ow}{in} \PY{n}{data}\PY{o}{.}\PY{n}{iterrows}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+    \PY{n}{string} \PY{o}{=} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZdq{}}
+    \PY{k}{for} \PY{n}{column} \PY{o+ow}{in} \PY{n}{data}\PY{o}{.}\PY{n}{columns}\PY{p}{:}
+        \PY{k}{if} \PY{n}{column} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{x\PYZus{}e\PYZus{}out [\PYZhy{}]}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} 
+            \PY{c+c1}{\PYZsh{} Do not add mask tokens, simply ignore}
+            \PY{c+c1}{\PYZsh{}string += column + \PYZdq{}: \PYZdq{} + \PYZsq{}[MASK]\PYZsq{}*4 + \PYZdq{} \PYZdq{}}
+            \PY{k}{continue}
+        \PY{k}{if} \PY{n}{column} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{sequence}\PY{l+s+s2}{\PYZdq{}} \PY{o+ow}{or} \PY{n}{column} \PY{o}{==} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{id}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}
+            \PY{k}{continue}
+        \PY{n}{string} \PY{o}{+}\PY{o}{=} \PY{n}{column} \PY{o}{+} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{: }\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{n+nb}{str}\PY{p}{(}\PY{n}{row}\PY{p}{[}\PY{n}{column}\PY{p}{]}\PY{p}{)} \PY{o}{+} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{ }\PY{l+s+s2}{\PYZdq{}}
+    \PY{n}{masked\PYZus{}string} \PY{o}{=} \PY{n}{string}\PY{o}{.}\PY{n}{strip}\PY{p}{(}\PY{p}{)}
+    \PY{n}{data}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{sequence}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{[}\PY{n}{index}\PY{p}{]} \PY{o}{=} \PY{n}{masked\PYZus{}string}
+
+\PY{n}{data}\PY{o}{.}\PY{n}{describe}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{2}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+<bound method NDFrame.describe of          id        author geometry pressure
+[MPa] mass\_flux [kg/m2-s]  \textbackslash{}
+0         0      Thompson     tube            7.0              3770.0
+1         1      Thompson     tube            nan              6049.0
+2         2      Thompson      nan          13.79              2034.0
+3         3          Beus  annulus          13.79              3679.0
+4         5           nan      nan          17.24              3648.0
+{\ldots}     {\ldots}           {\ldots}      {\ldots}            {\ldots}                 {\ldots}
+23089  1861  Richenderfer    plate           1.01              1500.0
+23090  1862  Richenderfer    plate           1.01              1500.0
+23091  1863  Richenderfer    plate           1.01              2000.0
+23092  1864  Richenderfer    plate           1.01              2000.0
+23093  1865  Richenderfer    plate           1.01              2000.0
+
+      D\_e [mm] D\_h [mm] length [mm] chf\_exp [MW/m2] x\_e\_out [-]  \textbackslash{}
+0          nan     10.8       432.0             3.6      0.1754
+1         10.3     10.3       762.0             6.2     -0.0416
+2          7.7      7.7       457.0             2.5      0.0335
+3          5.6     15.2      2134.0             3.0     -0.0279
+4          nan      1.9       696.0             3.6     -0.0711
+{\ldots}        {\ldots}      {\ldots}         {\ldots}             {\ldots}         {\ldots}
+23089     15.0    120.0        10.0             9.4     -0.0218
+23090     15.0    120.0        10.0            10.4     -0.0434
+23091     15.0    120.0        10.0            10.8     -0.0109
+23092     15.0    120.0        10.0            10.9     -0.0218
+23093     15.0    120.0        10.0            11.5     -0.0434
+
+                                                sequence
+0      author: Thompson geometry: tube pressure [MPa]{\ldots}
+1      author: Thompson geometry: tube pressure [MPa]{\ldots}
+2      author: Thompson geometry: nan pressure [MPa]:{\ldots}
+3      author: Beus geometry: annulus pressure [MPa]:{\ldots}
+4      author: nan geometry: nan pressure [MPa]: 17.2{\ldots}
+{\ldots}                                                  {\ldots}
+23089  author: Richenderfer geometry: plate pressure {\ldots}
+23090  author: Richenderfer geometry: plate pressure {\ldots}
+23091  author: Richenderfer geometry: plate pressure {\ldots}
+23092  author: Richenderfer geometry: plate pressure {\ldots}
+23093  author: Richenderfer geometry: plate pressure {\ldots}
+
+[23094 rows x 11 columns]>
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \hypertarget{trainoptimize}{%
+\subsubsection{Train/Optimize}\label{trainoptimize}}
+
+BERT Masked LM in PyTorch
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{3}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Prepare data as Ax = B}
+\PY{c+c1}{\PYZsh{} A}
+\PY{n}{sequences} \PY{o}{=} \PY{n}{data}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{sequence}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}
+\PY{c+c1}{\PYZsh{} B}
+\PY{n}{x\PYZus{}e\PYZus{}out} \PY{o}{=} \PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{x\PYZus{}e\PYZus{}out [\PYZhy{}]}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+
+\PY{n}{tokenized\PYZus{}data} \PY{o}{=} \PY{n}{sequences}\PY{o}{.}\PY{n}{apply}\PY{p}{(}\PY{n}{token\PYZus{}encoder\PYZus{}fun}\PY{p}{)}
+\PY{n}{tokenized\PYZus{}data} \PY{o}{=} \PY{n}{tokenized\PYZus{}data}\PY{o}{.}\PY{n}{reset\PYZus{}index}\PY{p}{(}\PY{n}{drop}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+
+\PY{n}{input\PYZus{}ids} \PY{o}{=} \PY{n}{torch}\PY{o}{.}\PY{n}{tensor}\PY{p}{(}\PY{n}{tokenized\PYZus{}data}\PY{p}{)}
+
+\PY{n}{attention\PYZus{}masks} \PY{o}{=} \PY{n}{torch}\PY{o}{.}\PY{n}{empty}\PY{p}{(} \PY{p}{(} \PY{n+nb}{len}\PY{p}{(}\PY{n}{input\PYZus{}ids}\PY{p}{)}\PY{p}{,} \PY{n}{MAX\PYZus{}LENGTH} \PY{p}{)} \PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Generate attention masks}
+\PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n}{trange}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{input\PYZus{}ids}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+    \PY{n}{tokens} \PY{o}{=} \PY{n}{input\PYZus{}ids}\PY{p}{[}\PY{n}{i}\PY{p}{,} \PY{p}{:}\PY{p}{]}
+    \PY{n}{row\PYZus{}mask} \PY{o}{=} \PY{p}{[}\PY{n+nb}{int}\PY{p}{(}\PY{n}{token\PYZus{}id}\PY{o}{.}\PY{n}{item}\PY{p}{(}\PY{p}{)} \PY{o}{\PYZgt{}} \PY{l+m+mi}{0}\PY{p}{)} \PY{k}{for} \PY{n}{token\PYZus{}id} \PY{o+ow}{in} \PY{n}{tokens}\PY{p}{]}
+    \PY{n}{row\PYZus{}mask} \PY{o}{=} \PY{n}{torch}\PY{o}{.}\PY{n}{tensor}\PY{p}{(}\PY{n}{row\PYZus{}mask}\PY{p}{)}\PY{o}{.}\PY{n}{unsqueeze}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{)}
+    \PY{n}{attention\PYZus{}masks}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{o}{=} \PY{n}{row\PYZus{}mask}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}, frame=single, framerule=2mm, rulecolor=\color{outerrorbackground}]
+\textcolor{ansi-red}{---------------------------------------------------------------------------}
+\textcolor{ansi-red}{NameError}                                 Traceback (most recent call last)
+Cell \textcolor{ansi-green}{In[3], line 3}
+\textcolor{ansi-green-intense}{\textbf{      1}} \# Prepare data as Ax = B
+\textcolor{ansi-green-intense}{\textbf{      2}} \# A
+\textcolor{ansi-green}{----> 3} sequences = data["sequence"]
+\textcolor{ansi-green-intense}{\textbf{      4}} \# B
+\textcolor{ansi-green-intense}{\textbf{      5}} x\_e\_out = data['x\_e\_out [-]']
+
+\textcolor{ansi-red}{NameError}: name 'data' is not defined
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{6}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{x\PYZus{}e\PYZus{}out} \PY{o}{=} \PY{n}{data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{x\PYZus{}e\PYZus{}out [\PYZhy{}]}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{n+nb}{float}\PY{p}{)}
+\PY{n}{x\PYZus{}e\PYZus{}out} \PY{o}{=} \PY{n}{torch}\PY{o}{.}\PY{n}{tensor}\PY{p}{(}\PY{n}{x\PYZus{}e\PYZus{}out}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n}{torch}\PY{o}{.}\PY{n}{float32}\PY{p}{)}\PY{o}{.}\PY{n}{reshape}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Combine the training inputs into a TensorDataset.}
+\PY{n}{dataset} \PY{o}{=} \PY{n}{TensorDataset}\PY{p}{(}\PY{n}{input\PYZus{}ids}\PY{p}{,} \PY{n}{attention\PYZus{}masks}\PY{p}{,} \PY{n}{x\PYZus{}e\PYZus{}out}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Create a 90\PYZhy{}10 train\PYZhy{}validation split.}
+\PY{c+c1}{\PYZsh{} Calculate the number of samples to include in each set.}
+\PY{n}{train\PYZus{}size} \PY{o}{=} \PY{n+nb}{int}\PY{p}{(}\PY{l+m+mf}{0.9} \PY{o}{*} \PY{n+nb}{len}\PY{p}{(}\PY{n}{dataset}\PY{p}{)}\PY{p}{)}
+\PY{n}{test\PYZus{}size} \PY{o}{=} \PY{n+nb}{len}\PY{p}{(}\PY{n}{dataset}\PY{p}{)} \PY{o}{\PYZhy{}} \PY{n}{train\PYZus{}size}
+
+\PY{c+c1}{\PYZsh{} Divide the dataset by randomly selecting samples.}
+\PY{n}{train\PYZus{}dataset}\PY{p}{,} \PY{n}{test\PYZus{}dataset} \PY{o}{=} \PY{n}{random\PYZus{}split}\PY{p}{(}\PY{n}{dataset}\PY{p}{,} \PY{p}{[}\PY{n}{train\PYZus{}size}\PY{p}{,} \PY{n}{test\PYZus{}size}\PY{p}{]}\PY{p}{)}
+
+\PY{n}{train\PYZus{}dataloader} \PY{o}{=} \PY{n}{DataLoader}\PY{p}{(}
+            \PY{n}{train\PYZus{}dataset}\PY{p}{,}  \PY{c+c1}{\PYZsh{} The training samples.}
+            \PY{n}{sampler} \PY{o}{=} \PY{n}{RandomSampler}\PY{p}{(}\PY{n}{train\PYZus{}dataset}\PY{p}{)}\PY{p}{,} \PY{c+c1}{\PYZsh{} Select batches randomly}
+            \PY{n}{batch\PYZus{}size} \PY{o}{=} \PY{n}{batch\PYZus{}size} \PY{c+c1}{\PYZsh{} Trains with this batch size.}
+        \PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} For validation the order doesn\PYZsq{}t matter, so we\PYZsq{}ll just read them sequentially.}
+\PY{n}{test\PYZus{}dataloader} \PY{o}{=} \PY{n}{DataLoader}\PY{p}{(}
+            \PY{n}{test\PYZus{}dataset}\PY{p}{,} \PY{c+c1}{\PYZsh{} The validation samples.}
+            \PY{n}{sampler} \PY{o}{=} \PY{n}{SequentialSampler}\PY{p}{(}\PY{n}{test\PYZus{}dataset}\PY{p}{)}\PY{p}{,} \PY{c+c1}{\PYZsh{} Pull out batches sequentially.}
+            \PY{n}{batch\PYZus{}size} \PY{o}{=} \PY{n}{batch\PYZus{}size} \PY{c+c1}{\PYZsh{} Evaluate with this batch size.}
+        \PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{3}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{model} \PY{o}{=} \PY{n}{BertHeatFlux}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{to}\PY{p}{(}\PY{n}{device}\PY{p}{)}
+\PY{n}{model}\PY{o}{.}\PY{n}{train}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Some weights of the model checkpoint at bert-base-uncased were not used when
+initializing BertModel: ['cls.predictions.transform.dense.weight',
+'cls.predictions.transform.dense.bias', 'cls.predictions.bias',
+'cls.seq\_relationship.bias', 'cls.predictions.decoder.weight',
+'cls.predictions.transform.LayerNorm.bias',
+'cls.predictions.transform.LayerNorm.weight', 'cls.seq\_relationship.weight']
+- This IS expected if you are initializing BertModel from the checkpoint of a
+model trained on another task or with another architecture (e.g. initializing a
+BertForSequenceClassification model from a BertForPreTraining model).
+- This IS NOT expected if you are initializing BertModel from the checkpoint of
+a model that you expect to be exactly identical (initializing a
+BertForSequenceClassification model from a BertForSequenceClassification model).
+    \end{Verbatim}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{3}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+BertHeatFlux(
+  (bert): BertModel(
+    (embeddings): BertEmbeddings(
+      (word\_embeddings): Embedding(30522, 768, padding\_idx=0)
+      (position\_embeddings): Embedding(512, 768)
+      (token\_type\_embeddings): Embedding(2, 768)
+      (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise\_affine=True)
+      (dropout): Dropout(p=0.1, inplace=False)
+    )
+    (encoder): BertEncoder(
+      (layer): ModuleList(
+        (0-11): 12 x BertLayer(
+          (attention): BertAttention(
+            (self): BertSelfAttention(
+              (query): Linear(in\_features=768, out\_features=768, bias=True)
+              (key): Linear(in\_features=768, out\_features=768, bias=True)
+              (value): Linear(in\_features=768, out\_features=768, bias=True)
+              (dropout): Dropout(p=0.1, inplace=False)
+            )
+            (output): BertSelfOutput(
+              (dense): Linear(in\_features=768, out\_features=768, bias=True)
+              (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise\_affine=True)
+              (dropout): Dropout(p=0.1, inplace=False)
+            )
+          )
+          (intermediate): BertIntermediate(
+            (dense): Linear(in\_features=768, out\_features=3072, bias=True)
+            (intermediate\_act\_fn): GELUActivation()
+          )
+          (output): BertOutput(
+            (dense): Linear(in\_features=3072, out\_features=768, bias=True)
+            (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise\_affine=True)
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+        )
+      )
+    )
+    (pooler): BertPooler(
+      (dense): Linear(in\_features=768, out\_features=768, bias=True)
+      (activation): Tanh()
+    )
+  )
+  (dropout): Dropout(p=0.3, inplace=False)
+  (linear): Linear(in\_features=768, out\_features=1, bias=True)
+)
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{13}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Step 3: Define the optimizer and loss fn}
+\PY{n}{optimizer} \PY{o}{=} \PY{n}{torch}\PY{o}{.}\PY{n}{optim}\PY{o}{.}\PY{n}{AdamW}\PY{p}{(}\PY{n}{model}\PY{o}{.}\PY{n}{parameters}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{n}{lr}\PY{o}{=}\PY{l+m+mf}{1e\PYZhy{}5}\PY{p}{)}
+\PY{n}{loss\PYZus{}fn} \PY{o}{=} \PY{n}{torch}\PY{o}{.}\PY{n}{nn}\PY{o}{.}\PY{n}{MSELoss}\PY{p}{(}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Step 4: Train the model}
+\PY{n}{num\PYZus{}epochs} \PY{o}{=} \PY{l+m+mi}{5}
+
+\PY{k}{for} \PY{n}{epoch} \PY{o+ow}{in} \PY{n}{trange}\PY{p}{(}\PY{n}{num\PYZus{}epochs}\PY{p}{)}\PY{p}{:}
+    \PY{k}{for} \PY{n}{batch} \PY{o+ow}{in} \PY{n}{tqdm}\PY{p}{(}\PY{n}{train\PYZus{}dataloader}\PY{p}{)}\PY{p}{:}
+        \PY{n}{input\PYZus{}ids}\PY{p}{,} \PY{n}{attention\PYZus{}mask}\PY{p}{,} \PY{n}{labels} \PY{o}{=} \PY{p}{[}\PY{n}{x}\PY{o}{.}\PY{n}{to}\PY{p}{(}\PY{n}{device}\PY{p}{)} \PY{k}{for} \PY{n}{x} \PY{o+ow}{in} \PY{n}{batch}\PY{p}{]}
+
+        \PY{c+c1}{\PYZsh{} Reset gradients}
+        \PY{n}{optimizer}\PY{o}{.}\PY{n}{zero\PYZus{}grad}\PY{p}{(}\PY{p}{)}
+
+        \PY{c+c1}{\PYZsh{} Forward pass}
+        \PY{n}{predictions} \PY{o}{=} \PY{n}{model}\PY{p}{(}\PY{n}{input\PYZus{}ids}\PY{p}{,} 
+                        \PY{n}{attention\PYZus{}mask}\PY{p}{)}
+        \PY{n}{loss} \PY{o}{=} \PY{n}{loss\PYZus{}fn}\PY{p}{(}\PY{n}{predictions}\PY{p}{,} \PY{n}{labels}\PY{p}{)}
+        
+        \PY{c+c1}{\PYZsh{} Backward pass}
+        \PY{n}{loss}\PY{o}{.}\PY{n}{backward}\PY{p}{(}\PY{p}{)}
+
+        \PY{c+c1}{\PYZsh{}torch.nn.utils.clip\PYZus{}grad}
+
+        \PY{c+c1}{\PYZsh{} Update the weights}
+        \PY{n}{optimizer}\PY{o}{.}\PY{n}{step}\PY{p}{(}\PY{p}{)}
+
+    \PY{c+c1}{\PYZsh{} Print the loss and accuracy of the model for this epoch}
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Epoch }\PY{l+s+si}{\PYZob{}}\PY{n}{epoch}\PY{o}{+}\PY{l+m+mi}{1}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{, Loss: }\PY{l+s+si}{\PYZob{}}\PY{n}{loss}\PY{l+s+si}{:}\PY{l+s+s2}{.3f}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+
+\PY{n}{torch}\PY{o}{.}\PY{n}{save}\PY{p}{(}\PY{n}{model}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{bert\PYZus{}fine\PYZhy{}tuned\PYZhy{}1.sav}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+  0\%|          | 0/5 [00:00<?, ?it/s]
+    \end{Verbatim}
+
+    
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+  0\%|          | 0/650 [00:00<?, ?it/s]
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+Epoch 1, Loss: 0.014
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+  0\%|          | 0/650 [00:00<?, ?it/s]
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+Epoch 2, Loss: 0.007
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+  0\%|          | 0/650 [00:00<?, ?it/s]
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+Epoch 3, Loss: 0.007
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+  0\%|          | 0/650 [00:00<?, ?it/s]
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+Epoch 4, Loss: 0.003
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+  0\%|          | 0/650 [00:00<?, ?it/s]
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+Epoch 5, Loss: 0.006
+    \end{Verbatim}
+
+    \hypertarget{bertheatflux-model-names}{%
+\subparagraph{BertHeatFlux Model Names}\label{bertheatflux-model-names}}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{bert\_fine-tuned\_1.sav}
+
+  \begin{itemize}
+  \tightlist
+  \item
+    epochs=5, training: data.csv + Data\_CHF
+  \item
+    loss: 0.014, 0.007, 0.007, 0.003, 0.006 ***
+  \end{itemize}
+\end{itemize}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{32}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Evaluate the model on the testing dataset}
+\PY{k}{with} \PY{n}{torch}\PY{o}{.}\PY{n}{no\PYZus{}grad}\PY{p}{(}\PY{p}{)}\PY{p}{:} 
+  \PY{n}{mean\PYZus{}squared\PYZus{}error} \PY{o}{=} \PY{n}{MeanSquaredError}\PY{p}{(}\PY{n}{squared}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}\PY{o}{.}\PY{n}{to}\PY{p}{(}\PY{n}{device}\PY{p}{)}
+  \PY{n}{RMSE} \PY{o}{=} \PY{l+m+mi}{0}
+  \PY{k}{for} \PY{n}{batch} \PY{o+ow}{in} \PY{n}{test\PYZus{}dataloader}\PY{p}{:}
+    \PY{n}{input\PYZus{}ids}\PY{p}{,} \PY{n}{attention\PYZus{}mask}\PY{p}{,} \PY{n}{target} \PY{o}{=} \PY{p}{[}\PY{n}{x}\PY{o}{.}\PY{n}{to}\PY{p}{(}\PY{n}{device}\PY{p}{)} \PY{k}{for} \PY{n}{x} \PY{o+ow}{in} \PY{n}{batch}\PY{p}{]}
+
+    \PY{c+c1}{\PYZsh{} Get the logits for the masked tokens}
+    \PY{c+c1}{\PYZsh{}outputs = model(input\PYZus{}ids, attention\PYZus{}mask=attention\PYZus{}mask)}
+    \PY{n}{preds} \PY{o}{=} \PY{n}{model}\PY{p}{(}\PY{n}{input\PYZus{}ids}\PY{p}{,} 
+                    \PY{n}{attention\PYZus{}mask}\PY{p}{)}
+    
+    \PY{n}{RMSE} \PY{o}{+}\PY{o}{=} \PY{n}{mean\PYZus{}squared\PYZus{}error}\PY{p}{(}\PY{n}{preds}\PY{p}{,} \PY{n}{target}\PY{p}{)}
+  \PY{n}{RMSE} \PY{o}{=} \PY{n}{RMSE}\PY{o}{.}\PY{n}{cpu}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{detach}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{numpy}\PY{p}{(}\PY{p}{)}
+\PY{c+c1}{\PYZsh{} Print the accuracy of the model}
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{MSE: }\PY{l+s+si}{\PYZob{}:.3f\PYZcb{}}\PY{l+s+s2}{\PYZdq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{RMSE}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+  0\%|          | 0/73 [00:00<?, ?it/s]
+    \end{Verbatim}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+MSE: 6.045
+    \end{Verbatim}
+
+    \hypertarget{use-trained-model-for-prediction-on-competition-data}{%
+\subsubsection{Use Trained Model for Prediction on Competition
+Data}\label{use-trained-model-for-prediction-on-competition-data}}
+
+    \hypertarget{uses-data_test}{%
+\subparagraph{\texorpdfstring{Uses
+\texttt{data\_test}}{Uses data\_test}}\label{uses-data_test}}
+
+    \hypertarget{load-predict-output-to-file.txt}{%
+\paragraph{Load, predict, output to
+file.txt}\label{load-predict-output-to-file.txt}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{49}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} Load the numerical data you want to train BERT on}
+\PY{n}{df1} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}csv}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{data.csv}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{c+c1}{\PYZsh{}df2 = pd.read\PYZus{}csv(\PYZsq{}Data\PYZus{}CHF\PYZus{}Zhao\PYZus{}2020\PYZus{}ATE.csv\PYZsq{})}
+\PY{n}{frames} \PY{o}{=} \PY{p}{[}\PY{n}{df1}\PY{p}{]}
+\PY{n}{df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{concat}\PY{p}{(}\PY{n}{frames}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Define the name of the column that you want to move to the end of the DataFrame}
+\PY{n}{column\PYZus{}name} \PY{o}{=} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{x\PYZus{}e\PYZus{}out [\PYZhy{}]}\PY{l+s+s2}{\PYZdq{}}
+
+\PY{c+c1}{\PYZsh{} Select the column and drop it from the DataFrame}
+\PY{n}{column\PYZus{}to\PYZus{}move} \PY{o}{=} \PY{n}{df}\PY{p}{[}\PY{n}{column\PYZus{}name}\PY{p}{]}
+\PY{n}{col} \PY{o}{=} \PY{n}{df}\PY{o}{.}\PY{n}{drop}\PY{p}{(}\PY{n}{column\PYZus{}name}\PY{p}{,} \PY{n}{axis}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{inplace}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Append the column back to the end of the DataFrame}
+\PY{n}{df}\PY{p}{[}\PY{n}{column\PYZus{}name}\PY{p}{]} \PY{o}{=} \PY{n}{column\PYZus{}to\PYZus{}move}
+
+\PY{c+c1}{\PYZsh{} select only rows where x\PYZus{}e out DOES NOT exist}
+\PY{n}{data\PYZus{}test} \PY{o}{=} \PY{n}{df}\PY{p}{[}\PY{n}{df}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{x\PYZus{}e\PYZus{}out [\PYZhy{}]}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{o}{.}\PY{n}{isna}\PY{p}{(}\PY{p}{)}\PY{p}{]}
+
+\PY{c+c1}{\PYZsh{} start with a small data set for speed}
+\PY{c+c1}{\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}}
+\PY{n}{data\PYZus{}test} \PY{o}{=} \PY{n}{data\PYZus{}test}\PY{p}{[}\PY{l+m+mi}{10000}\PY{p}{:}\PY{p}{]}
+\PY{c+c1}{\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}}
+\PY{n}{data\PYZus{}test} \PY{o}{=} \PY{n}{data\PYZus{}test}\PY{o}{.}\PY{n}{reset\PYZus{}index}\PY{p}{(}\PY{n}{drop}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Convert numerical values to string format to match BERT input requirement}
+\PY{n}{data\PYZus{}test} \PY{o}{=} \PY{n}{data\PYZus{}test}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{n+nb}{str}\PY{p}{)}
+
+\PY{n}{data\PYZus{}test}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{sequence}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]} \PY{o}{=} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZdq{}}
+
+\PY{c+c1}{\PYZsh{} Concatenate all the values in a row into a single string using the column names}
+\PY{c+c1}{\PYZsh{} Iterate through rows and columns}
+\PY{k}{for} \PY{n}{index}\PY{p}{,} \PY{n}{row} \PY{o+ow}{in} \PY{n}{data\PYZus{}test}\PY{o}{.}\PY{n}{iterrows}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+    \PY{n}{string} \PY{o}{=} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZdq{}}
+    \PY{k}{for} \PY{n}{column} \PY{o+ow}{in} \PY{n}{data\PYZus{}test}\PY{o}{.}\PY{n}{columns}\PY{p}{:}
+        \PY{k}{if} \PY{n}{column} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{x\PYZus{}e\PYZus{}out [\PYZhy{}]}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} 
+            \PY{k}{continue}
+        \PY{k}{if} \PY{n}{column} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{sequence}\PY{l+s+s2}{\PYZdq{}} \PY{o+ow}{or} \PY{n}{column} \PY{o}{==} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{id}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}
+            \PY{k}{continue}
+        \PY{n}{string} \PY{o}{+}\PY{o}{=} \PY{n}{column} \PY{o}{+} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{: }\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{n+nb}{str}\PY{p}{(}\PY{n}{row}\PY{p}{[}\PY{n}{column}\PY{p}{]}\PY{p}{)} \PY{o}{+} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{ }\PY{l+s+s2}{\PYZdq{}}
+    \PY{n}{masked\PYZus{}string} \PY{o}{=} \PY{n}{string}\PY{o}{.}\PY{n}{strip}\PY{p}{(}\PY{p}{)}
+    \PY{n}{data\PYZus{}test}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{sequence}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}\PY{p}{[}\PY{n}{index}\PY{p}{]} \PY{o}{=} \PY{n}{masked\PYZus{}string}
+
+\PY{n}{sequences} \PY{o}{=} \PY{n}{data\PYZus{}test}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{sequence}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}
+\PY{n}{x\PYZus{}e\PYZus{}out} \PY{o}{=} \PY{n}{data\PYZus{}test}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{x\PYZus{}e\PYZus{}out [\PYZhy{}]}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+\PY{n}{x\PYZus{}e\PYZus{}out} \PY{o}{=} \PY{n}{data\PYZus{}test}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{x\PYZus{}e\PYZus{}out [\PYZhy{}]}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{o}{.}\PY{n}{astype}\PY{p}{(}\PY{n+nb}{float}\PY{p}{)}
+\PY{n}{x\PYZus{}e\PYZus{}out} \PY{o}{=} \PY{n}{torch}\PY{o}{.}\PY{n}{tensor}\PY{p}{(}\PY{n}{x\PYZus{}e\PYZus{}out}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n}{torch}\PY{o}{.}\PY{n}{float32}\PY{p}{)}\PY{o}{.}\PY{n}{reshape}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,}\PY{l+m+mi}{1}\PY{p}{)}
+
+\PY{n}{tokenized\PYZus{}data} \PY{o}{=} \PY{n}{sequences}\PY{o}{.}\PY{n}{apply}\PY{p}{(}\PY{n}{token\PYZus{}encoder\PYZus{}fun}\PY{p}{)}
+\PY{n}{tokenized\PYZus{}data} \PY{o}{=} \PY{n}{tokenized\PYZus{}data}\PY{o}{.}\PY{n}{reset\PYZus{}index}\PY{p}{(}\PY{n}{drop}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+
+\PY{n}{input\PYZus{}ids} \PY{o}{=} \PY{n}{torch}\PY{o}{.}\PY{n}{tensor}\PY{p}{(}\PY{n}{tokenized\PYZus{}data}\PY{p}{)}
+
+\PY{n}{attention\PYZus{}masks} \PY{o}{=} \PY{n}{torch}\PY{o}{.}\PY{n}{empty}\PY{p}{(} \PY{p}{(} \PY{n+nb}{len}\PY{p}{(}\PY{n}{input\PYZus{}ids}\PY{p}{)}\PY{p}{,} \PY{n}{MAX\PYZus{}LENGTH} \PY{p}{)} \PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Generate attention masks}
+\PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{input\PYZus{}ids}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+    \PY{n}{tokens} \PY{o}{=} \PY{n}{input\PYZus{}ids}\PY{p}{[}\PY{n}{i}\PY{p}{,} \PY{p}{:}\PY{p}{]}
+    \PY{n}{row\PYZus{}mask} \PY{o}{=} \PY{p}{[}\PY{n+nb}{int}\PY{p}{(}\PY{n}{token\PYZus{}id}\PY{o}{.}\PY{n}{item}\PY{p}{(}\PY{p}{)} \PY{o}{\PYZgt{}} \PY{l+m+mi}{0}\PY{p}{)} \PY{k}{for} \PY{n}{token\PYZus{}id} \PY{o+ow}{in} \PY{n}{tokens}\PY{p}{]}
+    \PY{n}{row\PYZus{}mask} \PY{o}{=} \PY{n}{torch}\PY{o}{.}\PY{n}{tensor}\PY{p}{(}\PY{n}{row\PYZus{}mask}\PY{p}{)}\PY{o}{.}\PY{n}{unsqueeze}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{)}
+    \PY{n}{attention\PYZus{}masks}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{o}{=} \PY{n}{row\PYZus{}mask}
+
+\PY{n}{eval\PYZus{}dataset} \PY{o}{=} \PY{n}{TensorDataset}\PY{p}{(}\PY{n}{input\PYZus{}ids}\PY{p}{,} \PY{n}{attention\PYZus{}masks}\PY{p}{)} \PY{c+c1}{\PYZsh{}x\PYZus{}e\PYZus{}out is nan so no point}
+
+\PY{n}{eval\PYZus{}dataloader} \PY{o}{=} \PY{n}{DataLoader}\PY{p}{(}
+    \PY{n}{eval\PYZus{}dataset}\PY{p}{,}
+    \PY{n}{sampler}\PY{o}{=}\PY{n}{SequentialSampler}\PY{p}{(}\PY{n}{eval\PYZus{}dataset}\PY{p}{)}
+\PY{p}{)}
+
+\PY{n}{device} \PY{o}{=} \PY{n}{torch}\PY{o}{.}\PY{n}{device}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{cpu}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{model} \PY{o}{=} \PY{n}{torch}\PY{o}{.}\PY{n}{load}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{bert\PYZus{}fine\PYZhy{}tuned\PYZhy{}1.sav}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{o}{.}\PY{n}{to}\PY{p}{(}\PY{n}{device}\PY{p}{)}
+\PY{n}{model}\PY{o}{.}\PY{n}{eval}\PY{p}{(}\PY{p}{)}
+
+\PY{n}{predictions} \PY{o}{=} \PY{n}{torch}\PY{o}{.}\PY{n}{empty}\PY{p}{(} \PY{p}{(} \PY{n+nb}{len}\PY{p}{(}\PY{n}{input\PYZus{}ids}\PY{p}{)}\PY{p}{,} \PY{l+m+mi}{1} \PY{p}{)} \PY{p}{)}\PY{o}{.}\PY{n}{to}\PY{p}{(}\PY{n}{device}\PY{p}{)}
+\PY{n}{i} \PY{o}{=} \PY{l+m+mi}{0}
+\PY{k}{for} \PY{n}{batch} \PY{o+ow}{in} \PY{n}{tqdm}\PY{p}{(}\PY{n}{eval\PYZus{}dataloader}\PY{p}{)}\PY{p}{:}
+    \PY{n}{input\PYZus{}ids}\PY{p}{,} \PY{n}{attention\PYZus{}mask} \PY{o}{=} \PY{p}{[}\PY{n}{x}\PY{o}{.}\PY{n}{to}\PY{p}{(}\PY{n}{device}\PY{p}{)} \PY{k}{for} \PY{n}{x} \PY{o+ow}{in} \PY{n}{batch}\PY{p}{]}
+
+    \PY{c+c1}{\PYZsh{} Forward pass}
+    \PY{n}{pred} \PY{o}{=} \PY{n}{model}\PY{p}{(}\PY{n}{input\PYZus{}ids}\PY{o}{.}\PY{n}{cpu}\PY{p}{(}\PY{p}{)}\PY{p}{,} 
+                    \PY{n}{attention\PYZus{}mask}\PY{p}{)}
+    
+    \PY{c+c1}{\PYZsh{} Print the loss and accuracy of the model for this epoch}
+    \PY{n}{predictions}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{o}{=} \PY{n}{pred}
+    \PY{n}{i} \PY{o}{+}\PY{o}{=} \PY{l+m+mi}{1}
+
+\PY{c+c1}{\PYZsh{}np.savetxt(\PYZsq{}batch11.txt\PYZsq{}, predictions.cpu().detach().numpy())}
+\end{Verbatim}
+\end{tcolorbox}
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+  0\%|          | 0/415 [00:00<?, ?it/s]
+    \end{Verbatim}
+
+    
+    \hypertarget{combine-output-files-into-single-file}{%
+\paragraph{Combine output files into single
+file}\label{combine-output-files-into-single-file}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{35}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{} filenames = [\PYZsq{}batch1.txt\PYZsq{}, \PYZsq{}batch2.txt\PYZsq{}, \PYZsq{}batch3.txt\PYZsq{}, \PYZsq{}batch4.txt\PYZsq{},\PYZsq{}batch5.txt\PYZsq{},\PYZsq{}batch6.txt\PYZsq{},\PYZsq{}batch7.txt\PYZsq{},}
+\PY{l+s+sd}{\PYZsq{}batch8.txt\PYZsq{},\PYZsq{}batch9.txt\PYZsq{},\PYZsq{}batch10.txt\PYZsq{},\PYZsq{}batch11.txt\PYZsq{}]}
+\PY{l+s+sd}{with open(\PYZsq{}combined.txt\PYZsq{}, \PYZsq{}w\PYZsq{}) as outfile:}
+\PY{l+s+sd}{    for fname in filenames:}
+\PY{l+s+sd}{        with open(fname) as infile:}
+\PY{l+s+sd}{            outfile.write(infile.read()) \PYZdq{}\PYZdq{}\PYZdq{}}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{40}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{} \PYZsh{}data\PYZus{}test = df[df[\PYZdq{}x\PYZus{}e\PYZus{}out [\PYZhy{}]\PYZdq{}].isna()]}
+\PY{l+s+sd}{np.savetxt(\PYZsq{}ids.txt\PYZsq{}, data\PYZus{}test[\PYZsq{}id\PYZsq{}]) \PYZdq{}\PYZdq{}\PYZdq{}}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{combine-two-text-files-into-a-single-csv-file}{%
+\paragraph{Combine two text files into a single csv
+file}\label{combine-two-text-files-into-a-single-csv-file}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{3}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{} import csv}
+
+\PY{l+s+sd}{\PYZsh{} read in data from file1.txt}
+\PY{l+s+sd}{with open(\PYZsq{}ids.txt\PYZsq{}, \PYZsq{}r\PYZsq{}) as file1:}
+\PY{l+s+sd}{    data1 = file1.read().splitlines()}
+
+\PY{l+s+sd}{\PYZsh{} read in data from file2.txt}
+\PY{l+s+sd}{with open(\PYZsq{}combined.txt\PYZsq{}, \PYZsq{}r\PYZsq{}) as file2:}
+\PY{l+s+sd}{    data2 = file2.read().splitlines()}
+
+\PY{l+s+sd}{\PYZsh{} combine the two lists}
+\PY{l+s+sd}{data = data1 + data2}
+
+\PY{l+s+sd}{\PYZsh{} write combined data to output.csv}
+\PY{l+s+sd}{with open(\PYZsq{}output.csv\PYZsq{}, \PYZsq{}w\PYZsq{}, newline=\PYZsq{}\PYZsq{}) as csvfile:}
+\PY{l+s+sd}{    writer = csv.writer(csvfile)}
+\PY{l+s+sd}{    writer.writerow([\PYZsq{}ID\PYZsq{}, \PYZsq{}x\PYZus{}e\PYZus{}out\PYZsq{}])  \PYZsh{} write column headers}
+\PY{l+s+sd}{    for i in range(len(data)):}
+\PY{l+s+sd}{        if i \PYZlt{} len(data1):}
+\PY{l+s+sd}{            writer.writerow([data1[i], data2[i]]) \PYZdq{}\PYZdq{}\PYZdq{}}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{appendix}{%
+\subsubsection{Appendix}\label{appendix}}
+
+    \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+    \hypertarget{consoletesting}{%
+\paragraph{Console/Testing}\label{consoletesting}}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{5}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k+kn}{from} \PY{n+nn}{bertviz} \PY{k+kn}{import} \PY{n}{model\PYZus{}view}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{50}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k+kn}{from} \PY{n+nn}{torchviz} \PY{k+kn}{import} \PY{n}{make\PYZus{}dot}
+\PY{c+c1}{\PYZsh{}device = torch.device(\PYZsq{}cpu\PYZsq{})}
+\PY{c+c1}{\PYZsh{}model = torch.load(\PYZsq{}bert\PYZus{}fine\PYZhy{}tuned\PYZhy{}1.sav\PYZsq{}).to(device)}
+
+\PY{n}{make\PYZus{}dot}\PY{p}{(}\PY{n}{predictions}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{n}{params}\PY{o}{=}\PY{n+nb}{dict}\PY{p}{(}\PY{n}{model}\PY{o}{.}\PY{n}{named\PYZus{}parameters}\PY{p}{(}\PY{p}{)}\PY{p}{)}\PY{p}{,} \PY{n}{show\PYZus{}attrs}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}, frame=single, framerule=2mm, rulecolor=\color{outerrorbackground}]
+\textcolor{ansi-red}{---------------------------------------------------------------------------}
+\textcolor{ansi-red}{KeyboardInterrupt}                         Traceback (most recent call last)
+Cell \textcolor{ansi-green}{In[50], line 5}
+\textcolor{ansi-green-intense}{\textbf{      1}} from torchviz import make\_dot
+\textcolor{ansi-green-intense}{\textbf{      2}} \#device = torch.device('cpu')
+\textcolor{ansi-green-intense}{\textbf{      3}} \#model = torch.load('bert\_fine-tuned-1.sav').to(device)
+\textcolor{ansi-green}{----> 5} make\_dot(predictions.mean(), params=dict(model.named\_parameters()), show\_attrs=True)
+
+File \textcolor{ansi-green}{\textasciitilde{}/anaconda3/envs/STA208\_BERT/lib/python3.9/site-packages/IPython/core/displayhook.py:268}, in \textcolor{ansi-cyan}{DisplayHook.\_\_call\_\_}\textcolor{ansi-blue}{(self, result)}
+\textcolor{ansi-green-intense}{\textbf{    266}} self.start\_displayhook()
+\textcolor{ansi-green-intense}{\textbf{    267}} self.write\_output\_prompt()
+\textcolor{ansi-green}{--> 268} format\_dict, md\_dict = self.compute\_format\_data(result)
+\textcolor{ansi-green-intense}{\textbf{    269}} self.update\_user\_ns(result)
+\textcolor{ansi-green-intense}{\textbf{    270}} self.fill\_exec\_result(result)
+
+File \textcolor{ansi-green}{\textasciitilde{}/anaconda3/envs/STA208\_BERT/lib/python3.9/site-packages/IPython/core/displayhook.py:157}, in \textcolor{ansi-cyan}{DisplayHook.compute\_format\_data}\textcolor{ansi-blue}{(self, result)}
+\textcolor{ansi-green-intense}{\textbf{    127}} def compute\_format\_data(self, result):
+\textcolor{ansi-green-intense}{\textbf{    128}}     """Compute format data of the object to be displayed.
+\textcolor{ansi-green-intense}{\textbf{    129}} 
+\textcolor{ansi-green-intense}{\textbf{    130}}     The format data is a generalization of the :func:`repr` of an object.
+\textcolor{ansi-green}{   ({\ldots})}
+\textcolor{ansi-green-intense}{\textbf{    155}} 
+\textcolor{ansi-green-intense}{\textbf{    156}}     """
+\textcolor{ansi-green}{--> 157}     return self.shell.display\_formatter.format(result)
+
+File \textcolor{ansi-green}{\textasciitilde{}/anaconda3/envs/STA208\_BERT/lib/python3.9/site-packages/IPython/core/formatters.py:149}, in \textcolor{ansi-cyan}{DisplayFormatter.format}\textcolor{ansi-blue}{(self, obj, include, exclude)}
+\textcolor{ansi-green-intense}{\textbf{    145}} if self.ipython\_display\_formatter(obj):
+\textcolor{ansi-green-intense}{\textbf{    146}}     \# object handled itself, don't proceed
+\textcolor{ansi-green-intense}{\textbf{    147}}     return \{\}, \{\}
+\textcolor{ansi-green}{--> 149} format\_dict, md\_dict = self.mimebundle\_formatter(obj, include=include, exclude=exclude)
+\textcolor{ansi-green-intense}{\textbf{    151}} if format\_dict or md\_dict:
+\textcolor{ansi-green-intense}{\textbf{    152}}     if include:
+
+File \textcolor{ansi-green}{\textasciitilde{}/anaconda3/envs/STA208\_BERT/lib/python3.9/site-packages/decorator.py:232}, in \textcolor{ansi-cyan}{decorate.<locals>.fun}\textcolor{ansi-blue}{(*args, **kw)}
+\textcolor{ansi-green-intense}{\textbf{    230}} if not kwsyntax:
+\textcolor{ansi-green-intense}{\textbf{    231}}     args, kw = fix(args, kw, sig)
+\textcolor{ansi-green}{--> 232} return caller(func, *(extras + args), **kw)
+
+File \textcolor{ansi-green}{\textasciitilde{}/anaconda3/envs/STA208\_BERT/lib/python3.9/site-packages/IPython/core/formatters.py:223}, in \textcolor{ansi-cyan}{catch\_format\_error}\textcolor{ansi-blue}{(method, self, *args, **kwargs)}
+\textcolor{ansi-green-intense}{\textbf{    221}} """show traceback on failed format call"""
+\textcolor{ansi-green-intense}{\textbf{    222}} try:
+\textcolor{ansi-green}{--> 223}     r = method(self, *args, **kwargs)
+\textcolor{ansi-green-intense}{\textbf{    224}} except NotImplementedError:
+\textcolor{ansi-green-intense}{\textbf{    225}}     \# don't warn on NotImplementedErrors
+\textcolor{ansi-green-intense}{\textbf{    226}}     return self.\_check\_return(None, args[0])
+
+File \textcolor{ansi-green}{\textasciitilde{}/anaconda3/envs/STA208\_BERT/lib/python3.9/site-packages/IPython/core/formatters.py:974}, in \textcolor{ansi-cyan}{MimeBundleFormatter.\_\_call\_\_}\textcolor{ansi-blue}{(self, obj, include, exclude)}
+\textcolor{ansi-green-intense}{\textbf{    971}}     method = get\_real\_method(obj, self.print\_method)
+\textcolor{ansi-green-intense}{\textbf{    973}}     if method is not None:
+\textcolor{ansi-green}{--> 974}         return method(include=include, exclude=exclude)
+\textcolor{ansi-green-intense}{\textbf{    975}}     return None
+\textcolor{ansi-green-intense}{\textbf{    976}} else:
+
+File \textcolor{ansi-green}{\textasciitilde{}/anaconda3/envs/STA208\_BERT/lib/python3.9/site-packages/graphviz/jupyter\_integration.py:98}, in \textcolor{ansi-cyan}{JupyterIntegration.\_repr\_mimebundle\_}\textcolor{ansi-blue}{(self, include, exclude, **\_)}
+\textcolor{ansi-green-intense}{\textbf{     96}} include = set(include) if include is not None else \{self.\_jupyter\_mimetype\}
+\textcolor{ansi-green-intense}{\textbf{     97}} include -= set(exclude or [])
+\textcolor{ansi-green}{---> 98} return \{mimetype: getattr(self, method\_name)()
+\textcolor{ansi-green-intense}{\textbf{     99}}         for mimetype, method\_name in MIME\_TYPES.items()
+\textcolor{ansi-green-intense}{\textbf{    100}}         if mimetype in include\}
+
+File \textcolor{ansi-green}{\textasciitilde{}/anaconda3/envs/STA208\_BERT/lib/python3.9/site-packages/graphviz/jupyter\_integration.py:98}, in \textcolor{ansi-cyan}{<dictcomp>}\textcolor{ansi-blue}{(.0)}
+\textcolor{ansi-green-intense}{\textbf{     96}} include = set(include) if include is not None else \{self.\_jupyter\_mimetype\}
+\textcolor{ansi-green-intense}{\textbf{     97}} include -= set(exclude or [])
+\textcolor{ansi-green}{---> 98} return \{mimetype: getattr(self, method\_name)()
+\textcolor{ansi-green-intense}{\textbf{     99}}         for mimetype, method\_name in MIME\_TYPES.items()
+\textcolor{ansi-green-intense}{\textbf{    100}}         if mimetype in include\}
+
+File \textcolor{ansi-green}{\textasciitilde{}/anaconda3/envs/STA208\_BERT/lib/python3.9/site-packages/graphviz/jupyter\_integration.py:112}, in \textcolor{ansi-cyan}{JupyterIntegration.\_repr\_image\_svg\_xml}\textcolor{ansi-blue}{(self)}
+\textcolor{ansi-green-intense}{\textbf{    110}} def \_repr\_image\_svg\_xml(self) -> str:
+\textcolor{ansi-green-intense}{\textbf{    111}}     """Return the rendered graph as SVG string."""
+\textcolor{ansi-green}{--> 112}     return self.pipe(format='svg', encoding=SVG\_ENCODING)
+
+File \textcolor{ansi-green}{\textasciitilde{}/anaconda3/envs/STA208\_BERT/lib/python3.9/site-packages/graphviz/piping.py:104}, in \textcolor{ansi-cyan}{Pipe.pipe}\textcolor{ansi-blue}{(self, format, renderer, formatter, neato\_no\_op, quiet, engine, encoding)}
+\textcolor{ansi-green-intense}{\textbf{     55}} def pipe(self,
+\textcolor{ansi-green-intense}{\textbf{     56}}          format: typing.Optional[str] = None,
+\textcolor{ansi-green-intense}{\textbf{     57}}          renderer: typing.Optional[str] = None,
+\textcolor{ansi-green}{   ({\ldots})}
+\textcolor{ansi-green-intense}{\textbf{     61}}          engine: typing.Optional[str] = None,
+\textcolor{ansi-green-intense}{\textbf{     62}}          encoding: typing.Optional[str] = None) -> typing.Union[bytes, str]:
+\textcolor{ansi-green-intense}{\textbf{     63}}     """Return the source piped through the Graphviz layout command.
+\textcolor{ansi-green-intense}{\textbf{     64}} 
+\textcolor{ansi-green-intense}{\textbf{     65}}     Args:
+\textcolor{ansi-green}{   ({\ldots})}
+\textcolor{ansi-green-intense}{\textbf{    102}}         '<?xml version='
+\textcolor{ansi-green-intense}{\textbf{    103}}     """
+\textcolor{ansi-green}{--> 104}     return self.\_pipe\_legacy(format,
+\textcolor{ansi-green-intense}{\textbf{    105}}                              renderer=renderer,
+\textcolor{ansi-green-intense}{\textbf{    106}}                              formatter=formatter,
+\textcolor{ansi-green-intense}{\textbf{    107}}                              neato\_no\_op=neato\_no\_op,
+\textcolor{ansi-green-intense}{\textbf{    108}}                              quiet=quiet,
+\textcolor{ansi-green-intense}{\textbf{    109}}                              engine=engine,
+\textcolor{ansi-green-intense}{\textbf{    110}}                              encoding=encoding)
+
+File \textcolor{ansi-green}{\textasciitilde{}/anaconda3/envs/STA208\_BERT/lib/python3.9/site-packages/graphviz/\_tools.py:171}, in \textcolor{ansi-cyan}{deprecate\_positional\_args.<locals>.decorator.<locals>.wrapper}\textcolor{ansi-blue}{(*args, **kwargs)}
+\textcolor{ansi-green-intense}{\textbf{    162}}     wanted = ', '.join(f'\{name\}=\{value!r\}'
+\textcolor{ansi-green-intense}{\textbf{    163}}                        for name, value in deprecated.items())
+\textcolor{ansi-green-intense}{\textbf{    164}}     warnings.warn(f'The signature of \{func.\_\_name\_\_\} will be reduced'
+\textcolor{ansi-green-intense}{\textbf{    165}}                   f' to \{supported\_number\} positional args'
+\textcolor{ansi-green-intense}{\textbf{    166}}                   f' \{list(supported)\}: pass \{wanted\}'
+\textcolor{ansi-green-intense}{\textbf{    167}}                   ' as keyword arg(s)',
+\textcolor{ansi-green-intense}{\textbf{    168}}                   stacklevel=stacklevel,
+\textcolor{ansi-green-intense}{\textbf{    169}}                   category=category)
+\textcolor{ansi-green}{--> 171} return func(*args, **kwargs)
+
+File \textcolor{ansi-green}{\textasciitilde{}/anaconda3/envs/STA208\_BERT/lib/python3.9/site-packages/graphviz/piping.py:121}, in \textcolor{ansi-cyan}{Pipe.\_pipe\_legacy}\textcolor{ansi-blue}{(self, format, renderer, formatter, neato\_no\_op, quiet, engine, encoding)}
+\textcolor{ansi-green-intense}{\textbf{    112}} @\_tools.deprecate\_positional\_args(supported\_number=2)
+\textcolor{ansi-green-intense}{\textbf{    113}} def \_pipe\_legacy(self,
+\textcolor{ansi-green-intense}{\textbf{    114}}                  format: typing.Optional[str] = None,
+\textcolor{ansi-green}{   ({\ldots})}
+\textcolor{ansi-green-intense}{\textbf{    119}}                  engine: typing.Optional[str] = None,
+\textcolor{ansi-green-intense}{\textbf{    120}}                  encoding: typing.Optional[str] = None) -> typing.Union[bytes, str]:
+\textcolor{ansi-green}{--> 121}     return self.\_pipe\_future(format,
+\textcolor{ansi-green-intense}{\textbf{    122}}                              renderer=renderer,
+\textcolor{ansi-green-intense}{\textbf{    123}}                              formatter=formatter,
+\textcolor{ansi-green-intense}{\textbf{    124}}                              neato\_no\_op=neato\_no\_op,
+\textcolor{ansi-green-intense}{\textbf{    125}}                              quiet=quiet,
+\textcolor{ansi-green-intense}{\textbf{    126}}                              engine=engine,
+\textcolor{ansi-green-intense}{\textbf{    127}}                              encoding=encoding)
+
+File \textcolor{ansi-green}{\textasciitilde{}/anaconda3/envs/STA208\_BERT/lib/python3.9/site-packages/graphviz/piping.py:149}, in \textcolor{ansi-cyan}{Pipe.\_pipe\_future}\textcolor{ansi-blue}{(self, format, renderer, formatter, neato\_no\_op, quiet, engine, encoding)}
+\textcolor{ansi-green-intense}{\textbf{    146}} if encoding is not None:
+\textcolor{ansi-green-intense}{\textbf{    147}}     if codecs.lookup(encoding) is codecs.lookup(self.encoding):
+\textcolor{ansi-green-intense}{\textbf{    148}}         \# common case: both stdin and stdout need the same encoding
+\textcolor{ansi-green}{--> 149}         return self.\_pipe\_lines\_string(*args, encoding=encoding, **kwargs)
+\textcolor{ansi-green-intense}{\textbf{    150}}     try:
+\textcolor{ansi-green-intense}{\textbf{    151}}         raw = self.\_pipe\_lines(*args, input\_encoding=self.encoding, **kwargs)
+
+File \textcolor{ansi-green}{\textasciitilde{}/anaconda3/envs/STA208\_BERT/lib/python3.9/site-packages/graphviz/backend/piping.py:212}, in \textcolor{ansi-cyan}{pipe\_lines\_string}\textcolor{ansi-blue}{(engine, format, input\_lines, encoding, renderer, formatter, neato\_no\_op, quiet)}
+\textcolor{ansi-green-intense}{\textbf{    206}} cmd = dot\_command.command(engine, format,
+\textcolor{ansi-green-intense}{\textbf{    207}}                           renderer=renderer,
+\textcolor{ansi-green-intense}{\textbf{    208}}                           formatter=formatter,
+\textcolor{ansi-green-intense}{\textbf{    209}}                           neato\_no\_op=neato\_no\_op)
+\textcolor{ansi-green-intense}{\textbf{    210}} kwargs = \{'input\_lines': input\_lines, 'encoding': encoding\}
+\textcolor{ansi-green}{--> 212} proc = execute.run\_check(cmd, capture\_output=True, quiet=quiet, **kwargs)
+\textcolor{ansi-green-intense}{\textbf{    213}} return proc.stdout
+
+File \textcolor{ansi-green}{\textasciitilde{}/anaconda3/envs/STA208\_BERT/lib/python3.9/site-packages/graphviz/backend/execute.py:79}, in \textcolor{ansi-cyan}{run\_check}\textcolor{ansi-blue}{(cmd, input\_lines, encoding, quiet, **kwargs)}
+\textcolor{ansi-green-intense}{\textbf{     77}}     if kwargs.pop('capture\_output'):
+\textcolor{ansi-green-intense}{\textbf{     78}}         kwargs['stdout'] = kwargs['stderr'] = subprocess.PIPE
+\textcolor{ansi-green}{---> 79}     proc = \_run\_input\_lines(cmd, input\_lines, kwargs=kwargs)
+\textcolor{ansi-green-intense}{\textbf{     80}} else:
+\textcolor{ansi-green-intense}{\textbf{     81}}     proc = subprocess.run(cmd, **kwargs)
+
+File \textcolor{ansi-green}{\textasciitilde{}/anaconda3/envs/STA208\_BERT/lib/python3.9/site-packages/graphviz/backend/execute.py:105}, in \textcolor{ansi-cyan}{\_run\_input\_lines}\textcolor{ansi-blue}{(cmd, input\_lines, kwargs)}
+\textcolor{ansi-green-intense}{\textbf{    102}} for line in input\_lines:
+\textcolor{ansi-green-intense}{\textbf{    103}}     stdin\_write(line)
+\textcolor{ansi-green}{--> 105} stdout, stderr = popen.communicate()
+\textcolor{ansi-green-intense}{\textbf{    106}} return subprocess.CompletedProcess(popen.args, popen.returncode,
+\textcolor{ansi-green-intense}{\textbf{    107}}                                    stdout=stdout, stderr=stderr)
+
+File \textcolor{ansi-green}{\textasciitilde{}/anaconda3/envs/STA208\_BERT/lib/python3.9/subprocess.py:1134}, in \textcolor{ansi-cyan}{Popen.communicate}\textcolor{ansi-blue}{(self, input, timeout)}
+\textcolor{ansi-green-intense}{\textbf{   1131}}     endtime = None
+\textcolor{ansi-green-intense}{\textbf{   1133}} try:
+\textcolor{ansi-green}{-> 1134}     stdout, stderr = self.\_communicate(input, endtime, timeout)
+\textcolor{ansi-green-intense}{\textbf{   1135}} except KeyboardInterrupt:
+\textcolor{ansi-green-intense}{\textbf{   1136}}     \# https://bugs.python.org/issue25942
+\textcolor{ansi-green-intense}{\textbf{   1137}}     \# See the detailed comment in .wait().
+\textcolor{ansi-green-intense}{\textbf{   1138}}     if timeout is not None:
+
+File \textcolor{ansi-green}{\textasciitilde{}/anaconda3/envs/STA208\_BERT/lib/python3.9/subprocess.py:1979}, in \textcolor{ansi-cyan}{Popen.\_communicate}\textcolor{ansi-blue}{(self, input, endtime, orig\_timeout)}
+\textcolor{ansi-green-intense}{\textbf{   1972}}     self.\_check\_timeout(endtime, orig\_timeout,
+\textcolor{ansi-green-intense}{\textbf{   1973}}                         stdout, stderr,
+\textcolor{ansi-green-intense}{\textbf{   1974}}                         skip\_check\_and\_raise=True)
+\textcolor{ansi-green-intense}{\textbf{   1975}}     raise RuntimeError(  \# Impossible :)
+\textcolor{ansi-green-intense}{\textbf{   1976}}         '\_check\_timeout({\ldots}, skip\_check\_and\_raise=True) '
+\textcolor{ansi-green-intense}{\textbf{   1977}}         'failed to raise TimeoutExpired.')
+\textcolor{ansi-green}{-> 1979} ready = selector.select(timeout)
+\textcolor{ansi-green-intense}{\textbf{   1980}} self.\_check\_timeout(endtime, orig\_timeout, stdout, stderr)
+\textcolor{ansi-green-intense}{\textbf{   1982}} \# XXX Rewrite these to use non-blocking I/O on the file
+\textcolor{ansi-green-intense}{\textbf{   1983}} \# objects; they are no longer using C stdio!
+
+File \textcolor{ansi-green}{\textasciitilde{}/anaconda3/envs/STA208\_BERT/lib/python3.9/selectors.py:416}, in \textcolor{ansi-cyan}{\_PollLikeSelector.select}\textcolor{ansi-blue}{(self, timeout)}
+\textcolor{ansi-green-intense}{\textbf{    414}} ready = []
+\textcolor{ansi-green-intense}{\textbf{    415}} try:
+\textcolor{ansi-green}{--> 416}     fd\_event\_list = self.\_selector.poll(timeout)
+\textcolor{ansi-green-intense}{\textbf{    417}} except InterruptedError:
+\textcolor{ansi-green-intense}{\textbf{    418}}     return ready
+
+\textcolor{ansi-red}{KeyboardInterrupt}: 
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{46}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{} device = torch.device(\PYZsq{}cpu\PYZsq{})}
+\PY{l+s+sd}{model = torch.load(\PYZsq{}bert\PYZus{}fine\PYZhy{}tuned\PYZhy{}1.sav\PYZsq{}).to(device)}
+\PY{l+s+sd}{model.eval()}
+
+\PY{l+s+sd}{inp = eval\PYZus{}dataset[\PYZhy{}1]}
+\PY{l+s+sd}{input\PYZus{}ids, attention\PYZus{}mask = [x.view(1,128) for x in inp]}
+
+\PY{l+s+sd}{    \PYZsh{} Forward pass}
+\PY{l+s+sd}{outputs = model(input\PYZus{}ids, attention\PYZus{}mask)}
+
+\PY{l+s+sd}{attention = outputs[\PYZhy{}1]  \PYZsh{} Retrieve attention from model outputs}
+\PY{l+s+sd}{input\PYZus{}ids = input\PYZus{}ids.tolist()}
+\PY{l+s+sd}{input\PYZus{}ids = [i for i in input\PYZus{}ids[0]] }
+\PY{l+s+sd}{tokens = tokenizer.convert\PYZus{}ids\PYZus{}to\PYZus{}tokens(input\PYZus{}ids)  \PYZsh{} Convert input ids to token strings}
+\PY{l+s+sd}{model\PYZus{}view(attention, tokens)  \PYZsh{} Display model view}
+\PY{l+s+sd}{ \PYZdq{}\PYZdq{}\PYZdq{}}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}, frame=single, framerule=2mm, rulecolor=\color{outerrorbackground}]
+\textcolor{ansi-red}{---------------------------------------------------------------------------}
+\textcolor{ansi-red}{IndexError}                                Traceback (most recent call last)
+Cell \textcolor{ansi-green}{In[46], line 15}
+\textcolor{ansi-green-intense}{\textbf{     13}} input\_ids = [i for i in input\_ids[0]] 
+\textcolor{ansi-green-intense}{\textbf{     14}} tokens = tokenizer.convert\_ids\_to\_tokens(input\_ids)  \# Convert input ids to token strings
+\textcolor{ansi-green}{---> 15} model\_view(attention, tokens)
+
+File \textcolor{ansi-green}{\textasciitilde{}/anaconda3/envs/STA208\_BERT/lib/python3.9/site-packages/bertviz/model\_view.py:62}, in \textcolor{ansi-cyan}{model\_view}\textcolor{ansi-blue}{(attention, tokens, sentence\_b\_start, prettify\_tokens, display\_mode, encoder\_attention, decoder\_attention, cross\_attention, encoder\_tokens, decoder\_tokens, include\_layers, include\_heads, html\_action)}
+\textcolor{ansi-green-intense}{\textbf{     58}} if encoder\_attention is not None or decoder\_attention is not None or cross\_attention is not None \textbackslash{}
+\textcolor{ansi-green-intense}{\textbf{     59}}         or encoder\_tokens is not None or decoder\_tokens is not None:
+\textcolor{ansi-green-intense}{\textbf{     60}}     raise ValueError("If you specify 'attention' you may not specify any encoder-decoder arguments. This"
+\textcolor{ansi-green-intense}{\textbf{     61}}                      " argument is only for self-attention models.")
+\textcolor{ansi-green}{---> 62} n\_heads = num\_heads(attention)
+\textcolor{ansi-green-intense}{\textbf{     63}} if include\_layers is None:
+\textcolor{ansi-green-intense}{\textbf{     64}}     include\_layers = list(range(num\_layers(attention)))
+
+File \textcolor{ansi-green}{\textasciitilde{}/anaconda3/envs/STA208\_BERT/lib/python3.9/site-packages/bertviz/util.py:26}, in \textcolor{ansi-cyan}{num\_heads}\textcolor{ansi-blue}{(attention)}
+\textcolor{ansi-green-intense}{\textbf{     25}} def num\_heads(attention):
+\textcolor{ansi-green}{---> 26}     return attention[0][0].size(0)
+
+\textcolor{ansi-red}{IndexError}: invalid index of a 0-dim tensor. Use `tensor.item()` in Python or `tensor.item<T>()` in C++ to convert a 0-dim tensor to a number
+    \end{Verbatim}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{BertHeatFlux}\PY{p}{(}
+  \PY{p}{(}\PY{n}{bert}\PY{p}{)}\PY{p}{:} \PY{n}{BertModel}\PY{p}{(}
+    \PY{p}{(}\PY{n}{embeddings}\PY{p}{)}\PY{p}{:} \PY{n}{BertEmbeddings}\PY{p}{(}
+      \PY{p}{(}\PY{n}{word\PYZus{}embeddings}\PY{p}{)}\PY{p}{:} \PY{n}{Embedding}\PY{p}{(}\PY{l+m+mi}{30522}\PY{p}{,} \PY{l+m+mi}{768}\PY{p}{,} \PY{n}{padding\PYZus{}idx}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{)}
+      \PY{p}{(}\PY{n}{position\PYZus{}embeddings}\PY{p}{)}\PY{p}{:} \PY{n}{Embedding}\PY{p}{(}\PY{l+m+mi}{512}\PY{p}{,} \PY{l+m+mi}{768}\PY{p}{)}
+      \PY{p}{(}\PY{n}{token\PYZus{}type\PYZus{}embeddings}\PY{p}{)}\PY{p}{:} \PY{n}{Embedding}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{l+m+mi}{768}\PY{p}{)}
+      \PY{p}{(}\PY{n}{LayerNorm}\PY{p}{)}\PY{p}{:} \PY{n}{LayerNorm}\PY{p}{(}\PY{p}{(}\PY{l+m+mi}{768}\PY{p}{,}\PY{p}{)}\PY{p}{,} \PY{n}{eps}\PY{o}{=}\PY{l+m+mf}{1e\PYZhy{}12}\PY{p}{,} \PY{n}{elementwise\PYZus{}affine}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+      \PY{p}{(}\PY{n}{dropout}\PY{p}{)}\PY{p}{:} \PY{n}{Dropout}\PY{p}{(}\PY{n}{p}\PY{o}{=}\PY{l+m+mf}{0.1}\PY{p}{,} \PY{n}{inplace}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+    \PY{p}{)}
+    \PY{p}{(}\PY{n}{encoder}\PY{p}{)}\PY{p}{:} \PY{n}{BertEncoder}\PY{p}{(}
+      \PY{p}{(}\PY{n}{layer}\PY{p}{)}\PY{p}{:} \PY{n}{ModuleList}\PY{p}{(}
+        \PY{p}{(}\PY{l+m+mi}{0}\PY{o}{\PYZhy{}}\PY{l+m+mi}{11}\PY{p}{)}\PY{p}{:} \PY{l+m+mi}{12} \PY{n}{x} \PY{n}{BertLayer}\PY{p}{(}
+          \PY{p}{(}\PY{n}{attention}\PY{p}{)}\PY{p}{:} \PY{n}{BertAttention}\PY{p}{(}
+            \PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{)}\PY{p}{:} \PY{n}{BertSelfAttention}\PY{p}{(}
+              \PY{p}{(}\PY{n}{query}\PY{p}{)}\PY{p}{:} \PY{n}{Linear}\PY{p}{(}\PY{n}{in\PYZus{}features}\PY{o}{=}\PY{l+m+mi}{768}\PY{p}{,} \PY{n}{out\PYZus{}features}\PY{o}{=}\PY{l+m+mi}{768}\PY{p}{,} \PY{n}{bias}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+              \PY{p}{(}\PY{n}{key}\PY{p}{)}\PY{p}{:} \PY{n}{Linear}\PY{p}{(}\PY{n}{in\PYZus{}features}\PY{o}{=}\PY{l+m+mi}{768}\PY{p}{,} \PY{n}{out\PYZus{}features}\PY{o}{=}\PY{l+m+mi}{768}\PY{p}{,} \PY{n}{bias}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+              \PY{p}{(}\PY{n}{value}\PY{p}{)}\PY{p}{:} \PY{n}{Linear}\PY{p}{(}\PY{n}{in\PYZus{}features}\PY{o}{=}\PY{l+m+mi}{768}\PY{p}{,} \PY{n}{out\PYZus{}features}\PY{o}{=}\PY{l+m+mi}{768}\PY{p}{,} \PY{n}{bias}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+              \PY{p}{(}\PY{n}{dropout}\PY{p}{)}\PY{p}{:} \PY{n}{Dropout}\PY{p}{(}\PY{n}{p}\PY{o}{=}\PY{l+m+mf}{0.1}\PY{p}{,} \PY{n}{inplace}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+            \PY{p}{)}
+            \PY{p}{(}\PY{n}{output}\PY{p}{)}\PY{p}{:} \PY{n}{BertSelfOutput}\PY{p}{(}
+              \PY{p}{(}\PY{n}{dense}\PY{p}{)}\PY{p}{:} \PY{n}{Linear}\PY{p}{(}\PY{n}{in\PYZus{}features}\PY{o}{=}\PY{l+m+mi}{768}\PY{p}{,} \PY{n}{out\PYZus{}features}\PY{o}{=}\PY{l+m+mi}{768}\PY{p}{,} \PY{n}{bias}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+              \PY{p}{(}\PY{n}{LayerNorm}\PY{p}{)}\PY{p}{:} \PY{n}{LayerNorm}\PY{p}{(}\PY{p}{(}\PY{l+m+mi}{768}\PY{p}{,}\PY{p}{)}\PY{p}{,} \PY{n}{eps}\PY{o}{=}\PY{l+m+mf}{1e\PYZhy{}12}\PY{p}{,} \PY{n}{elementwise\PYZus{}affine}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+              \PY{p}{(}\PY{n}{dropout}\PY{p}{)}\PY{p}{:} \PY{n}{Dropout}\PY{p}{(}\PY{n}{p}\PY{o}{=}\PY{l+m+mf}{0.1}\PY{p}{,} \PY{n}{inplace}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+            \PY{p}{)}
+          \PY{p}{)}
+          \PY{p}{(}\PY{n}{intermediate}\PY{p}{)}\PY{p}{:} \PY{n}{BertIntermediate}\PY{p}{(}
+            \PY{p}{(}\PY{n}{dense}\PY{p}{)}\PY{p}{:} \PY{n}{Linear}\PY{p}{(}\PY{n}{in\PYZus{}features}\PY{o}{=}\PY{l+m+mi}{768}\PY{p}{,} \PY{n}{out\PYZus{}features}\PY{o}{=}\PY{l+m+mi}{3072}\PY{p}{,} \PY{n}{bias}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+            \PY{p}{(}\PY{n}{intermediate\PYZus{}act\PYZus{}fn}\PY{p}{)}\PY{p}{:} \PY{n}{GELUActivation}\PY{p}{(}\PY{p}{)}
+          \PY{p}{)}
+          \PY{p}{(}\PY{n}{output}\PY{p}{)}\PY{p}{:} \PY{n}{BertOutput}\PY{p}{(}
+            \PY{p}{(}\PY{n}{dense}\PY{p}{)}\PY{p}{:} \PY{n}{Linear}\PY{p}{(}\PY{n}{in\PYZus{}features}\PY{o}{=}\PY{l+m+mi}{3072}\PY{p}{,} \PY{n}{out\PYZus{}features}\PY{o}{=}\PY{l+m+mi}{768}\PY{p}{,} \PY{n}{bias}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+            \PY{p}{(}\PY{n}{LayerNorm}\PY{p}{)}\PY{p}{:} \PY{n}{LayerNorm}\PY{p}{(}\PY{p}{(}\PY{l+m+mi}{768}\PY{p}{,}\PY{p}{)}\PY{p}{,} \PY{n}{eps}\PY{o}{=}\PY{l+m+mf}{1e\PYZhy{}12}\PY{p}{,} \PY{n}{elementwise\PYZus{}affine}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+            \PY{p}{(}\PY{n}{dropout}\PY{p}{)}\PY{p}{:} \PY{n}{Dropout}\PY{p}{(}\PY{n}{p}\PY{o}{=}\PY{l+m+mf}{0.1}\PY{p}{,} \PY{n}{inplace}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+          \PY{p}{)}
+        \PY{p}{)}
+      \PY{p}{)}
+    \PY{p}{)}
+    \PY{p}{(}\PY{n}{pooler}\PY{p}{)}\PY{p}{:} \PY{n}{BertPooler}\PY{p}{(}
+      \PY{p}{(}\PY{n}{dense}\PY{p}{)}\PY{p}{:} \PY{n}{Linear}\PY{p}{(}\PY{n}{in\PYZus{}features}\PY{o}{=}\PY{l+m+mi}{768}\PY{p}{,} \PY{n}{out\PYZus{}features}\PY{o}{=}\PY{l+m+mi}{768}\PY{p}{,} \PY{n}{bias}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+      \PY{p}{(}\PY{n}{activation}\PY{p}{)}\PY{p}{:} \PY{n}{Tanh}\PY{p}{(}\PY{p}{)}
+    \PY{p}{)}
+  \PY{p}{)}
+  \PY{p}{(}\PY{n}{dropout}\PY{p}{)}\PY{p}{:} \PY{n}{Dropout}\PY{p}{(}\PY{n}{p}\PY{o}{=}\PY{l+m+mf}{0.3}\PY{p}{,} \PY{n}{inplace}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+  \PY{p}{(}\PY{n}{linear}\PY{p}{)}\PY{p}{:} \PY{n}{Linear}\PY{p}{(}\PY{n}{in\PYZus{}features}\PY{o}{=}\PY{l+m+mi}{768}\PY{p}{,} \PY{n}{out\PYZus{}features}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{bias}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{47}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{model}\PY{o}{.}\PY{n}{parameters}
+\end{Verbatim}
+\end{tcolorbox}
+
+            \begin{tcolorbox}[breakable, size=fbox, boxrule=.5pt, pad at break*=1mm, opacityfill=0]
+\prompt{Out}{outcolor}{47}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+<bound method Module.parameters of BertHeatFlux(
+  (bert): BertModel(
+    (embeddings): BertEmbeddings(
+      (word\_embeddings): Embedding(30522, 768, padding\_idx=0)
+      (position\_embeddings): Embedding(512, 768)
+      (token\_type\_embeddings): Embedding(2, 768)
+      (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise\_affine=True)
+      (dropout): Dropout(p=0.1, inplace=False)
+    )
+    (encoder): BertEncoder(
+      (layer): ModuleList(
+        (0-11): 12 x BertLayer(
+          (attention): BertAttention(
+            (self): BertSelfAttention(
+              (query): Linear(in\_features=768, out\_features=768, bias=True)
+              (key): Linear(in\_features=768, out\_features=768, bias=True)
+              (value): Linear(in\_features=768, out\_features=768, bias=True)
+              (dropout): Dropout(p=0.1, inplace=False)
+            )
+            (output): BertSelfOutput(
+              (dense): Linear(in\_features=768, out\_features=768, bias=True)
+              (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise\_affine=True)
+              (dropout): Dropout(p=0.1, inplace=False)
+            )
+          )
+          (intermediate): BertIntermediate(
+            (dense): Linear(in\_features=768, out\_features=3072, bias=True)
+            (intermediate\_act\_fn): GELUActivation()
+          )
+          (output): BertOutput(
+            (dense): Linear(in\_features=3072, out\_features=768, bias=True)
+            (LayerNorm): LayerNorm((768,), eps=1e-12, elementwise\_affine=True)
+            (dropout): Dropout(p=0.1, inplace=False)
+          )
+        )
+      )
+    )
+    (pooler): BertPooler(
+      (dense): Linear(in\_features=768, out\_features=768, bias=True)
+      (activation): Tanh()
+    )
+  )
+  (dropout): Dropout(p=0.3, inplace=False)
+  (linear): Linear(in\_features=768, out\_features=1, bias=True)
+)>
+\end{Verbatim}
+\end{tcolorbox}
+        
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+
+\end{Verbatim}
+\end{tcolorbox}
+
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+\end{document}
